@@ -2,10 +2,10 @@ import React from 'react';
 
 
 
-const DirectTrains = ({results, index}) =>
+const DirectTrains = ({trains, index}) =>
 {
     return (
-    <li id={index}>{results}</li>
+    <li id={index}>{trains}</li>
     );
 }
 

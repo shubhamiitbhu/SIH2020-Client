@@ -1,11 +1,11 @@
 import React from 'react';
 
-const AlternateTrainsRendering =({origin, destination, result})=>
+const AlternateTrainsRendering =({origin, destination, trains})=>
 {
-    const connectionStation = result.connection;
-    const distance = result.distance;
-    const trainsFromOriginToConnection = result["origin-connection"];
-    const trainsFromConnectionToDestination = result["connection-destination"];
+    const connectionStation = trains.connection;
+    const distance = trains.distance;
+    const trainsFromOriginToConnection = trains["origin-connection"];
+    const trainsFromConnectionToDestination = trains["connection-destination"];
 
     return(
     <React.Fragment>
@@ -14,12 +14,12 @@ const AlternateTrainsRendering =({origin, destination, result})=>
         <br />
         <div>
             Trains Between {origin.toUpperCase()} to {connectionStation} <br />
-            <ul>{trainsFromOriginToConnection.map((train)=><li>{train}</li>)}</ul>
+            <ul>{trainsFromOriginToConnection.map((train, index)=><li key={index}>{train}</li>)}</ul>
         </div>
 
         <div>
             Trains Between {connectionStation} to {destination.toUpperCase()} <br />
-            <ul>{trainsFromConnectionToDestination.map((train)=><li>{train}</li>)}</ul>
+            <ul>{trainsFromConnectionToDestination.map((train, index)=><li key={index}>{train}</li>)}</ul>
         </div>
     </React.Fragment>
     )

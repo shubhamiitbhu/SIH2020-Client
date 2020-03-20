@@ -1,17 +1,22 @@
 import React from 'react';
 import {Form, Button} from 'semantic-ui-react';
+import { ToastContainer ,toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import API from '../utils/API';
 import DirectTrains from './DirectTrains.js';
 import AlternateTrains from './AlternateTrains.js'
+
 
 class UserForm extends React.Component
 {
     state = {
         origin: '',
         destination: '',
-        result: null
+        trains: null
     }
+
+   
 
     submitData = async (e) =>
     {
@@ -20,13 +25,12 @@ class UserForm extends React.Component
         const destination = this.state.destination.toUpperCase();
 
         try{
-        const result = await API.get(`direct-trains/${origin}/${destination}`);
-        this.setState({result: result.data.direct})
-        console.log(result.data.direct);
+        const trains = await API.get(`direct-trains/${origin}/${destination}`);
+        this.setState({trains: trains.data.direct})
         }
         catch(error)
         {
-            console.log(error);
+            toast.error("Invalid Station Details");
         }
         
     }
@@ -36,7 +40,7 @@ class UserForm extends React.Component
         e.preventDefault();
         this.setState({
             destination: e.target.value,
-            result: null
+            trains: null
         });
     }
 
@@ -45,25 +49,26 @@ class UserForm extends React.Component
         e.preventDefault();
         this.setState({
             origin: e.target.value,
-            result: null
+            trains: null
         });
         
     }
     
     render()
     {
-        const {result, origin, destination} = this.state;
+        const {trains, origin, destination} = this.state;
 
         return(
             <React.Fragment>
                 <Form>
                     <Form.Field>
                         <label>Origin </label>
-                        <input placeholder='First Name' onChange={this.changeInOriginForm}/>
+                        <Form.Input placeholder='Origin Station code' onChange={this.changeInOriginForm}/>
                     </Form.Field>
                     <Form.Field>
+                        <br />
                         <label>Destination  </label>
-                        <input placeholder='Last Name' onChange={this.changeInDestinationForm}/>
+                        <Form.Input placeholder='Destination Station code' onChange={this.changeInDestinationForm}/>
                     </Form.Field>
                     <Form.Field>
       
@@ -71,12 +76,12 @@ class UserForm extends React.Component
                     <Button type='submit' onClick = {(e)=>{this.submitData(e)}}>Submit</Button>
                 </Form>
                 <ul>
-                {result !==null?result.map((result,index)=><DirectTrains results={result} index={index}/>):null}
+                {trains !==null?trains.map((trains,index)=><DirectTrains trains={trains} index={index} key={index} />):null}
                 </ul>
                 <div>
-                {result !== null && result.length === 0?<AlternateTrains origin={origin} destination={destination}/>:null}
+                {trains !== null && trains.length === 0?<AlternateTrains id={origin+destination} origin={origin} destination={destination} />:null}
                 </div>
-
+                <ToastContainer />
             </React.Fragment>
             );
     }
