@@ -57,7 +57,7 @@ class UserForm extends React.Component
     render()
     {
         const {trains, origin, destination} = this.state;
-
+      
         return(
             <React.Fragment>
                 <Form>
@@ -76,7 +76,7 @@ class UserForm extends React.Component
                     <Button type='submit' onClick = {(e)=>{this.submitData(e)}}>Submit</Button>
                 </Form>
                 <ul>
-                {trains !==null?trains.map((trains,index)=><DirectTrains trains={trains} index={index} key={index} />):null}
+                {trains !==null?trains.map((train,index)=><DirectTrains train={train} index={index} key={index} />):null}
                 </ul>
                 <div>
                 {trains !== null && trains.length === 0?<AlternateTrains id={origin+destination} origin={origin} destination={destination} />:null}
