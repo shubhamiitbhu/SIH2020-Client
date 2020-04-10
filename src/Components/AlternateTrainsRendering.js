@@ -14,12 +14,12 @@ const AlternateTrainsRendering =({origin, destination, trains})=>
         <br />
         <div>
             Trains Between {origin.toUpperCase()} to {connectionStation} <br />
-            <ul>{trainsFromOriginToConnection.map((train, index)=><li key={index}>{train.number} - {train.name !== undefined?train.name[0]:null}</li>)}</ul>
+            <ul>{trainsFromOriginToConnection.map((train, index)=><li key={index}>{train.number} - {train.name !== undefined?train.name[0]:"MEMU Passenger"}</li>)}</ul>
         </div>
 
         <div>
             Trains Between {connectionStation} to {destination.toUpperCase()} <br />
-            <ul>{trainsFromConnectionToDestination.map((train, index)=><li key={index}>{train.number} - {train.name !== undefined?train.name[0]:null}</li>)}</ul>
+            <ul>{trainsFromConnectionToDestination.map((train, index)=><li key={index}>{train.number} - {train.name !== undefined?train.name[0]:"MEME Passenger"}</li>)}</ul>
         </div>
     </React.Fragment>
     )

@@ -2,30 +2,32 @@ import React from 'react';
 import {Form, Button} from 'semantic-ui-react';
 import { ToastContainer ,toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import styled from 'styled-components';
+import Calendar from 'react-calendar';
 
 import API from '../utils/API';
 import DirectTrains from './DirectTrains.js';
 import AlternateTrains from './AlternateTrains.js'
-
 
 class UserForm extends React.Component
 {
     state = {
         origin: '',
         destination: '',
-        trains: null
+        date: new Date(),
+        trains: null,
+        calenderView: "none",
     }
 
    
 
-    submitData = async (e) =>
+    submitData = async (event) =>
     {
-        e.preventDefault();
-        const origin = this.state.origin.toUpperCase();
-        const destination = this.state.destination.toUpperCase();
-
+        event.preventDefault();
+        
+        const body = {origin: this.state.origin, destination:this.state.destination, date: this.state.date}
         try{
-        const trains = await API.get(`direct-trains/${origin}/${destination}`);
+        const trains = await API.post(`/direct-trains`,body);
         this.setState({trains: trains.data.direct})
         }
         catch(error)
@@ -35,28 +37,40 @@ class UserForm extends React.Component
         
     }
 
-    changeInDestinationForm = (e) =>
+    changeInDestinationForm = (event) =>
     {
-        e.preventDefault();
+        event.preventDefault();
         this.setState({
-            destination: e.target.value,
+            destination: event.target.value.toUpperCase(),
             trains: null
         });
     }
 
-    changeInOriginForm = (e)=>
+    changeInOriginForm = (event)=>
     {
-        e.preventDefault();
+        event.preventDefault();
         this.setState({
-            origin: e.target.value,
+            origin: event.target.value.toUpperCase(),
             trains: null
         });
         
     }
+
+    changeCalenderView = (e) =>
+    {
+        e.preventDefault();
+        this.state.calenderView==='block'?this.setState({calenderView:"none"}):
+        this.setState({calenderView:"block"});
+    }
+
+    changeDate = (value) =>
+    {
+        this.setState({date: value, calenderView: "none"});
+    }
     
     render()
     {
-        const {trains, origin, destination} = this.state;
+        const {trains, origin, destination, date, calenderView} = this.state;
       
         return(
             <React.Fragment>
@@ -69,6 +83,21 @@ class UserForm extends React.Component
                         <br />
                         <label>Destination  </label>
                         <Form.Input placeholder='Destination Station code' onChange={this.changeInDestinationForm}/>
+                        <br />
+                        <label>
+                            Date: {("0"+date.getDate()).slice(-2) + "-"
+                            + ("0"+(parseInt(date.getMonth(),10)+1)).slice(-2) + "-"
+                            + (date.getFullYear())}
+                        </label> 
+                        {" "}
+
+                        <Button onClick={this.changeCalenderView}>Change Date</Button>
+                        <StyledCalender display={calenderView}>
+                            <Calendar 
+                            value={this.state.date}
+                            onChange={this.changeDate}
+                            />
+                        </StyledCalender>
                     </Form.Field>
                     <Form.Field>
       
@@ -76,7 +105,8 @@ class UserForm extends React.Component
                     <Button type='submit' onClick = {(e)=>{this.submitData(e)}}>Submit</Button>
                 </Form>
                 <ul>
-                {trains !==null?trains.map((train,index)=><DirectTrains train={train} index={index} key={index} />):null}
+                {trains !==null?trains.map((train,index)=><DirectTrains origin={origin} destination={destination}
+                train={train} index={index} key={index} />):null}
                 </ul>
                 <div>
                 {trains !== null && trains.length === 0?<AlternateTrains id={origin+destination} origin={origin} destination={destination} />:null}
@@ -86,5 +116,9 @@ class UserForm extends React.Component
             );
     }
 } 
+
+const StyledCalender = styled.div`
+    display: ${props => props.display}
+`;
 
 export default UserForm;

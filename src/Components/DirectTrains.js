@@ -2,13 +2,16 @@ import React from 'react';
 
 
 
-const DirectTrains = ({train, index}) =>
+const DirectTrains = ({origin, destination, train, index}) =>
 {
-    console.log(train);
     const trainNumber = train.number;
-    const trainName = train.name!==undefined?train.name[0]:null;
+    const trainName = train.name!==undefined?train.name[0]:"MEMU Passenger";
+    const timeOfDepartureAtOrigin = train.originDepartTime;
     return (
-    <li id={index}>{trainNumber} - {trainName}</li>
+    <>
+        <li id={index}>{trainNumber} - {trainName}</li>
+        Time of Arrival at {origin}:{" "}{timeOfDepartureAtOrigin}
+    </>
     );
 }
 
