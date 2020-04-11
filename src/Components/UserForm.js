@@ -4,6 +4,8 @@ import { ToastContainer ,toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import styled from 'styled-components';
 import Calendar from 'react-calendar';
+import Loader from 'react-loader-spinner'
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
 
 import API from '../utils/API';
 import DirectTrains from './DirectTrains.js';
@@ -17,6 +19,9 @@ class UserForm extends React.Component
         date: new Date(),
         trains: null,
         calenderView: "none",
+        nearbyButtonView: "none",
+        submitButtonView: "block",
+        loading: false
     }
 
    
@@ -24,15 +29,16 @@ class UserForm extends React.Component
     submitData = async (event) =>
     {
         event.preventDefault();
-        
+        this.setState({loading:true})
         const body = {origin: this.state.origin, destination:this.state.destination, date: this.state.date}
         try{
         const trains = await API.post(`/direct-trains`,body);
-        this.setState({trains: trains.data.direct})
+        this.setState({trains: trains.data.direct, nearbyButtonView: "block", submitButtonView:"none", loading: false})
         }
         catch(error)
         {
             toast.error("Invalid Station Details");
+            this.setState({loading:false})
         }
         
     }
@@ -42,7 +48,8 @@ class UserForm extends React.Component
         event.preventDefault();
         this.setState({
             destination: event.target.value.toUpperCase(),
-            trains: null
+            trains: null,
+            submitButtonView:"block"
         });
     }
 
@@ -51,7 +58,8 @@ class UserForm extends React.Component
         event.preventDefault();
         this.setState({
             origin: event.target.value.toUpperCase(),
-            trains: null
+            trains: null,
+            submitButtonView:"block"
         });
         
     }
@@ -63,14 +71,35 @@ class UserForm extends React.Component
         this.setState({calenderView:"block"});
     }
 
+    loadTrainsFromNearby=async (e)=>
+    {
+        e.preventDefault();
+        this.setState({loading:true})
+        const body = {origin: this.state.origin, destination:this.state.destination, date: this.state.date}
+        
+        try{
+            const nearbyTrains = await API.post(`/direct-trains/from-nearby-stations`,body);
+            nearbyTrains.data.direct.map(train=>
+            this.setState({trains: [...this.state.trains,train]}));
+            this.setState({nearbyButtonView:"none"})
+            }
+            
+            catch(error)
+            {
+                toast.error("Invalid Station Details");
+            }
+        this.setState({loading:false})
+    }
+
     changeDate = (value) =>
     {
-        this.setState({date: value, calenderView: "none"});
+        this.setState({date: value, calenderView: "none", trains: null, nearbyButtonView: "none"});
     }
     
     render()
     {
-        const {trains, origin, destination, date, calenderView} = this.state;
+        const {trains, origin, destination, date, calenderView, 
+            nearbyButtonView, loading, submitButtonView} = this.state;
       
         return(
             <React.Fragment>
@@ -96,28 +125,46 @@ class UserForm extends React.Component
                             <Calendar 
                             value={this.state.date}
                             onChange={this.changeDate}
+                            minDate={new Date()}
+                            maxDate= {new Date((new Date()).getTime()+120*24*60*60*1000)}
                             />
                         </StyledCalender>
                     </Form.Field>
                     <Form.Field>
       
                     </Form.Field>
-                    <Button type='submit' onClick = {(e)=>{this.submitData(e)}}>Submit</Button>
+                    <SubmitButton type='submit' onClick = {(e)=>{this.submitData(e)}} display={submitButtonView}>Submit</SubmitButton>
                 </Form>
+                
                 <ul>
                 {trains !==null?trains.map((train,index)=><DirectTrains origin={origin} destination={destination}
                 train={train} index={index} key={index} />):null}
+                {trains !==null && trains.length===0? <div>No direct trains to show</div>:null}
+          
+                <StyledButton type="submit" onClick={(e)=>{this.loadTrainsFromNearby(e)}} display={nearbyButtonView}>
+                    Suggest alternate route (Direct)
+                </StyledButton>
                 </ul>
                 <div>
-                {trains !== null && trains.length === 0?<AlternateTrains id={origin+destination} origin={origin} destination={destination} />:null}
+                {trains !== null && trains.length === 0 && nearbyButtonView==="none" ?
+                <AlternateTrains id={origin+destination} origin={origin} destination={destination} />:null}
                 </div>
                 <ToastContainer />
+                {loading===true?<Loader type="Bars" color="black" height={30} width={30} />:null}
             </React.Fragment>
             );
     }
 } 
 
 const StyledCalender = styled.div`
+    display: ${props => props.display}
+`;
+
+const SubmitButton=styled.button`
+    display: ${props=>props.display}
+`;
+
+const StyledButton=styled.button`
     display: ${props => props.display}
 `;
 
