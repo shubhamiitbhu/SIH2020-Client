@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios from 'axios';
 
 export default axios.create({
-  baseURL: "https://sih-2020-26518.firebaseapp.com/",
-  responseType: "json",
+	baseURL: process.env.REACT_APP_BACKEND,
+	responseType: 'json',
 });
