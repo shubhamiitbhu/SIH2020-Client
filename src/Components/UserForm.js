@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Button, Grid, Modal, Popup } from 'semantic-ui-react';
+import { Form, Button, Grid, Popup } from 'semantic-ui-react';
 import { Icon } from 'react-icons-kit';
 import { calendar } from 'react-icons-kit/icomoon/calendar';
 import { toast } from 'react-toastify';
@@ -20,7 +20,6 @@ class UserForm extends React.Component {
 		date: '',
 		trains: null,
 		alternateTrains: null,
-		calenderModal: false,
 		loading: false,
 		record: false,
 	};
@@ -120,24 +119,11 @@ class UserForm extends React.Component {
 			date: senderDate,
 			calenderView: 'none',
 			trains: null,
-			calenderModal: !this.state.calenderModal,
 		});
 	};
 
-	changeCalenderModalView = () => {
-		this.setState({ calenderModal: !this.state.calenderModal });
-	};
-
-	changeRecording = () => {
-		this.setState({ record: !this.state.record });
-	};
-
-	onStop = (recordedBlob) => {
-		console.log(recordedBlob);
-	};
-
 	render() {
-		const { trains, alternateTrains, date, calenderModal, loading } = this.state;
+		const { trains, alternateTrains, origin, date, destination, loading } = this.state;
 
 		return (
 			<React.Fragment>
@@ -147,7 +133,11 @@ class UserForm extends React.Component {
 						<Grid.Column width={3}>
 							<Form>
 								<Form.Field>
-									<Form.Input placeholder='Origin Station code' onChange={this.changeInOriginForm} />
+									<Form.Input
+										placeholder='Origin Station code'
+										onChange={this.changeInOriginForm}
+										value={origin}
+									/>
 								</Form.Field>
 							</Form>
 						</Grid.Column>
@@ -157,6 +147,7 @@ class UserForm extends React.Component {
 									<Form.Input
 										placeholder='Destination Station code'
 										onChange={this.changeInDestinationForm}
+										value={destination}
 									/>
 								</Form.Field>
 							</Form>
@@ -165,7 +156,7 @@ class UserForm extends React.Component {
 							<Form>
 								<Form.Field>
 									<Form.Input
-										value={date.toUpperCase()}
+										value={date}
 										placeholder='Pick a Date from Calender'
 										onChange={this.changeInDestinationForm}
 									/>
