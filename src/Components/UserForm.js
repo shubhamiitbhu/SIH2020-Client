@@ -11,7 +11,7 @@ import { Loader } from 'semantic-ui-react';
 import API from '../utils/API';
 import JourneyCard from './JourneyCard.js';
 import AlternateTrains from './AlternateTrains.js';
-import Speech from './Speech.js';
+import Speech from './Voice.js';
 
 class UserForm extends React.Component {
 	state = {
