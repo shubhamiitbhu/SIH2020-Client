@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Button, Grid, Modal } from 'semantic-ui-react';
+import { Form, Button, Grid, Modal, Popup } from 'semantic-ui-react';
 import { Icon } from 'react-icons-kit';
 import { calendar } from 'react-icons-kit/icomoon/calendar';
 import { toast } from 'react-toastify';
@@ -10,35 +10,80 @@ import { Loader } from 'semantic-ui-react';
 
 import API from '../utils/API';
 import JourneyCard from './JourneyCard.js';
+import AlternateTrains from './AlternateTrains.js';
+import Speech from './Speech.js';
 
 class UserForm extends React.Component {
 	state = {
 		origin: '',
 		destination: '',
-		date: new Date(),
-		trains: [],
+		date: '',
+		trains: null,
+		alternateTrains: null,
 		calenderModal: false,
-		nearbyButtonView: 'none',
-		submitButtonView: 'block',
 		loading: false,
+		record: false,
+	};
+
+	componentDidMount() {
+		var value = new Date();
+		value = value.toString();
+		const dateSplit = value.split(' ');
+		const month = dateSplit[1];
+		const day = dateSplit[2];
+		const year = dateSplit[3];
+		const senderDate = day.toString() + ' ' + month.toLowerCase().toString() + ' ' + year.toString();
+		console.log(senderDate);
+		this.setState({
+			date: senderDate,
+		});
+	}
+
+	searchAlternateTrains = async (event) => {
+		event.preventDefault();
+		this.setState({ loading: true });
+		const { origin, destination, date } = this.state;
+		const body = { origin: origin, destination: destination, date: date };
+		try {
+			const trains = await API.post(`/alternate-trains/`, body);
+			this.setState({
+				alternateTrains: trains.data,
+				loading: false,
+			});
+		} catch (error) {
+			toast.error('Invalid Station Details');
+			this.setState({ loading: false });
+		}
 	};
 
 	submitData = async (event) => {
 		event.preventDefault();
 		this.setState({ loading: true });
-		const { origin, destination } = this.state;
-		const body = { origin: origin, destination: destination };
+		const { origin, destination, date } = this.state;
+		const body = { origin: origin, destination: destination, date: date };
 		try {
 			const trains = await API.post(`/direct-trains/`, body);
-			console.log(trains.data);
 			this.setState({
 				trains: trains.data,
-				nearbyButtonView: 'block',
-				submitButtonView: 'none',
 				loading: false,
 			});
 		} catch (error) {
-			console.log(error);
+			toast.error('Invalid Station Details');
+			this.setState({ loading: false });
+		}
+	};
+
+	speechToTextResult = async (origin, destination, date) => {
+		this.setState({ loading: true });
+
+		const body = { origin: origin, destination: destination, date: date };
+		try {
+			const trains = await API.post(`/direct-trains/`, body);
+			this.setState({
+				trains: trains.data,
+				loading: false,
+			});
+		} catch (error) {
 			toast.error('Invalid Station Details');
 			this.setState({ loading: false });
 		}
@@ -49,7 +94,7 @@ class UserForm extends React.Component {
 		this.setState({
 			destination: event.target.value.toUpperCase(),
 			trains: null,
-			submitButtonView: 'block',
+			alternateTrains: null,
 		});
 	};
 
@@ -58,16 +103,23 @@ class UserForm extends React.Component {
 		this.setState({
 			origin: event.target.value.toUpperCase(),
 			trains: null,
-			submitButtonView: 'block',
+			alternateTrains: null,
 		});
 	};
 
 	changeDate = (value) => {
+		value = value.toString();
+		const dateSplit = value.split(' ');
+
+		const month = dateSplit[1];
+		const day = dateSplit[2];
+		const year = dateSplit[3];
+
+		const senderDate = day.toString() + ' ' + month.toLowerCase().toString() + ' ' + year.toString();
 		this.setState({
-			date: value,
+			date: senderDate,
 			calenderView: 'none',
 			trains: null,
-			nearbyButtonView: 'none',
 			calenderModal: !this.state.calenderModal,
 		});
 	};
@@ -76,31 +128,30 @@ class UserForm extends React.Component {
 		this.setState({ calenderModal: !this.state.calenderModal });
 	};
 
+	changeRecording = () => {
+		this.setState({ record: !this.state.record });
+	};
+
+	onStop = (recordedBlob) => {
+		console.log(recordedBlob);
+	};
+
 	render() {
-		const {
-			trains,
-			origin,
-			destination,
-			date,
-			calenderModal,
-			nearbyButtonView,
-			loading,
-			submitButtonView,
-		} = this.state;
+		const { trains, alternateTrains, date, calenderModal, loading } = this.state;
 
 		return (
 			<React.Fragment>
 				<StyledGrid>
 					<Grid.Row>
 						<Grid.Column width={2} />
-						<Grid.Column width={4}>
+						<Grid.Column width={3}>
 							<Form>
 								<Form.Field>
 									<Form.Input placeholder='Origin Station code' onChange={this.changeInOriginForm} />
 								</Form.Field>
 							</Form>
 						</Grid.Column>
-						<Grid.Column width={4}>
+						<Grid.Column width={3}>
 							<Form>
 								<Form.Field>
 									<Form.Input
@@ -110,20 +161,33 @@ class UserForm extends React.Component {
 								</Form.Field>
 							</Form>
 						</Grid.Column>
-						<Grid.Column width={2}>
-							<Icon size={32} icon={calendar} onClick={this.changeCalenderModalView} />
-							<Modal open={calenderModal} size='small'>
-								<Modal.Header>Select Date</Modal.Header>
-								<Modal.Content>
+						<Grid.Column width={3}>
+							<Form>
+								<Form.Field>
+									<Form.Input
+										value={date.toUpperCase()}
+										placeholder='Pick a Date from Calender'
+										onChange={this.changeInDestinationForm}
+									/>
+								</Form.Field>
+							</Form>
+						</Grid.Column>
+
+						<Grid.Column width={1}>
+							<Popup
+								trigger={<Icon size={32} icon={calendar} onClick={this.changeCalenderModalView} />}
+								content={
 									<StyledCalendar
-										value={this.state.date}
+										value={new Date(this.state.date)}
 										onChange={this.changeDate}
 										minDate={new Date()}
 										maxDate={new Date(new Date().getTime() + 120 * 24 * 60 * 60 * 1000)}
 									/>
-								</Modal.Content>
-							</Modal>
-							<br />
+								}
+								position='bottom left'
+								flowing
+								hoverable
+							/>
 						</Grid.Column>
 
 						<Grid.Column width={1}>
@@ -132,9 +196,8 @@ class UserForm extends React.Component {
 								onClick={(e) => {
 									this.submitData(e);
 								}}
-								display={submitButtonView}
 							>
-								Submit
+								Search
 							</SubmitButton>
 						</Grid.Column>
 						<Grid.Column width={3} />
@@ -148,21 +211,30 @@ class UserForm extends React.Component {
 							<ul>
 								{trains !== null ? (
 									trains.map((train, index) => (
-										<JourneyCard
-											origin={origin}
-											destination={destination}
-											train={train}
-											index={index}
-											key={index}
-										/>
+										<JourneyCard train={train} index={index} key={index} />
 									))
 								) : null}
-								{trains !== null && trains.length === 0 ? <div>No direct trains to show</div> : null}
+								{trains !== null && trains.length === 0 && alternateTrains === null ? (
+									<div>
+										No direct trains to show<br />{' '}
+										<Button onClick={this.searchAlternateTrains}>
+											Search for Alternate Route?
+										</Button>
+									</div>
+								) : null}
+								{alternateTrains !== null && alternateTrains.length !== 0 ? (
+									<AlternateTrains trains={alternateTrains} />
+								) : null}
 							</ul>
 						</Grid.Column>
 						<Grid.Column width={3} />
 					</Grid.Row>
 				</Grid>
+				<Speech
+					onSpeechEnd={(origin, destination, date) => {
+						this.speechToTextResult(origin, destination, date);
+					}}
+				/>
 			</React.Fragment>
 		);
 	}

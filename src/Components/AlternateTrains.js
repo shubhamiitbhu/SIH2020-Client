@@ -1,43 +1,86 @@
-import React from 'react';
-import {Button} from 'semantic-ui-react';
-import Loader from 'react-loader-spinner'
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
+import React, { useEffect, useState } from 'react';
+import AlternateTrainsCards from './AlternateTrainsCard';
 
-import AlternateTrainsRendering from './AlternateTrainsRendering.js';
-import API from '../utils/API';
+const AlternateTrains = (props) => {
+	const [ journeys, setJourneys ] = useState(null);
 
-class AlternateTrains extends React.Component
-{
-    state = 
-    {
-        trains: null,
-        loading: false
-    }
+	const timePlay = (timeOne, timeTwo, sign) => {
+		//utility function, this will result timeOne + sign*timeTwo sign ={+1,-1}
+		const timeOneSplit = timeOne.split(':');
+		const timeTwoSplit = timeTwo.split(':');
 
-    searchForAlternateTrains = async(e)=>
-    {
-        const {origin, destination}= this.props;
-        this.setState({loading:true})
-        const alternateTrains = await API.get(`single-break-trains/${origin}/${destination}`);
-        this.setState({
-            trains: alternateTrains.data,
-            loading:false
-        });
-    }
+		const timeOneHr = parseInt(timeOneSplit[0], 10);
+		const timeOneMin = parseInt(timeOneSplit[1], 10);
 
-    render()
-    {
-        const {trains,loading} = this.state;
-        const {origin, destination}= this.props;
-        return(
-        <React.Fragment>
-            <Button onClick={()=>{this.searchForAlternateTrains()}}>  Search For Alternate Routes?</Button>
-            {loading===true?<Loader type="Bars" color="black" height={30} width={30} />:null}
-            {trains!==null? trains.map((train,index)=><AlternateTrainsRendering 
-            origin={origin} destination={destination} trains={train} key={index}/>) : null}
-        </React.Fragment>
-        );
-    }
-}
+		const timeTwoHr = parseInt(timeTwoSplit[0], 10);
+		const timeTwoMin = parseInt(timeTwoSplit[1], 10);
+
+		let carry = 0;
+
+		var minCalculation = timeOneMin + sign * timeTwoMin;
+		if (minCalculation < 0) {
+			carry = -1;
+			minCalculation = (minCalculation % 60 + 60) % 60;
+		} else if (minCalculation >= 60) {
+			carry = 1;
+			minCalculation = minCalculation % 60;
+		}
+		const hourCalculation = timeOneHr + sign * timeTwoHr + carry;
+		return { hour: hourCalculation, minute: minCalculation };
+	};
+
+	const differenceOfHours = (trainOC, trainCD, minTimeDifference, maxTimeDifference) => {
+		const timeGap = timePlay(trainCD.originDeparture, trainOC.destinationArrival, -1);
+
+		if (timeGap.hour <= maxTimeDifference && timeGap.hour >= minTimeDifference) {
+			return { value: true, timeGap: timeGap };
+		}
+
+		return false;
+	};
+
+	const setJourneyFixtures = (trains) => {
+		var fixtures = [];
+		for (var key in trains) {
+			const trainsBetweenOC = trains[key]['origin-connection'];
+			const trainsBetweenCD = trains[key]['connection-destination'];
+			const connection = trains[key]['connection'];
+			for (var keyOC in trainsBetweenOC) {
+				const trainOC = trainsBetweenOC[keyOC];
+				for (var keyCD in trainsBetweenCD) {
+					const trainCD = trainsBetweenCD[keyCD];
+					const { value, timeGap } = differenceOfHours(trainOC, trainCD, 1, 7);
+					if (value === true) {
+						const fixtureDump = {
+							originToConnection: trainOC,
+							connectionToDestination: trainCD,
+							connection: connection,
+							timeGap: timeGap,
+						};
+						fixtures.push(fixtureDump);
+					}
+				}
+			}
+		}
+		return fixtures;
+	};
+
+	useEffect(
+		() => {
+			const { trains } = props;
+			const fixtures = setJourneyFixtures(trains);
+			setJourneys(fixtures);
+		},
+		[ props ],
+	);
+
+	return (
+		<div>
+			{journeys !== null && journeys.length !== 0 ? (
+				journeys.map((journey, index) => <AlternateTrainsCards journey={journey} key={index} />)
+			) : null}
+		</div>
+	);
+};
 
 export default AlternateTrains;
