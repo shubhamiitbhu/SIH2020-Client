@@ -1,5 +1,7 @@
 import React from 'react';
+import axios from 'axios';
 import RasaAPI from '../utils/RasaAPI.js';
+import API from '../utils/API.js';
 
 const Speech = (props) => {
 	const { onSpeechEnd } = props;
@@ -19,26 +21,22 @@ const Speech = (props) => {
 		var transcript = event.results[last][0].transcript;
 
 		const body = { text: transcript };
-		const entityExtraction = await RasaAPI.post(body);
+		const entityExtraction = await axios.post('http://35.202.113.93:5000/', body);
 
 		console.log(transcript, entityExtraction);
 
 		const data = {};
-		for (var result in entityExtraction.data.entities) {
-			if (result.entity === 'orig') {
-				data['origin'] = result.value;
-			} else if (result.entity === 'date') {
-				data['date'] = result.value;
-			} else if (result.entity === 'dest') {
-				data['destination'] = result.value;
-			}
+		const iterate = entityExtraction.data.entities;
+		for (var key in iterate) {
+			data[iterate[key]['entity']] = iterate[key]['value'];
 		}
 
-		try {
-			onSpeechEnd(data['origin'], data['destination'], data['date']);
-		} catch (error) {
-			console.log(error);
-		}
+		const originBody = { name: data['orig'] };
+		const destinationBody = { name: data['dest'] };
+		const origin = await API.post('/station-name-to-code', originBody);
+		const destination = await API.post('/station-name-to-code', destinationBody);
+
+		onSpeechEnd(origin.data, destination.data, data['date']);
 
 		stopListnening();
 	};

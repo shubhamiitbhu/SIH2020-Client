@@ -34,7 +34,8 @@ const StyledNavbar = styled(MDBNavbar)`
     top: 0 !important;
     left: 0 !important;
     color: #5f6368 !important;
-    height: 60px !important;
+	height: 60px !important;
+	align-items: center !important;
 `;
 
 const StyledIcon = styled.img`

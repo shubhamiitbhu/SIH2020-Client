@@ -11,7 +11,7 @@ import { Loader } from 'semantic-ui-react';
 import API from '../utils/API';
 import JourneyCard from './JourneyCard.js';
 import AlternateTrains from './AlternateTrains.js';
-import Speech from './Voice.js';
+import Speech from './Speech.js';
 
 class UserForm extends React.Component {
 	state = {
@@ -74,7 +74,7 @@ class UserForm extends React.Component {
 
 	speechToTextResult = async (origin, destination, date) => {
 		this.setState({ loading: true });
-
+		console.log(origin);
 		const body = { origin: origin, destination: destination, date: date };
 		try {
 			const trains = await API.post(`/direct-trains/`, body);
