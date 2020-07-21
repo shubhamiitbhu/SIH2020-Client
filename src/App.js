@@ -1,6 +1,8 @@
 import React from 'react';
 
+import 'bootstrap-css-only/css/bootstrap.min.css'; 
 import 'mdbreact/dist/css/mdb.css';
+
 
 import 'react-calendar/dist/Calendar.css';
 import 'semantic-ui-css/semantic.min.css';
@@ -16,7 +18,6 @@ class App extends React.Component {
 			<div>
 				{' '}
 				<Navbar />
-				<br />
 				<UserForm />{' '}
 			</div>
 		);

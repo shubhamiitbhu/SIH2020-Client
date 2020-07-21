@@ -1,6 +1,7 @@
 import React from 'react';
-import { Form, Button, Grid, Popup } from 'semantic-ui-react';
+import { Form, Button, Grid, Popup, Segment } from 'semantic-ui-react';
 import { Icon } from 'react-icons-kit';
+import {sad} from 'react-icons-kit/icomoon/sad'
 import { calendar } from 'react-icons-kit/icomoon/calendar';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -127,19 +128,21 @@ class UserForm extends React.Component {
 
 		return (
 			<React.Fragment>
-				<StyledGrid>
+				<StyledGrid stackable padded>
 					<Grid.Row>
 						<Grid.Column width={2} />
-						<Grid.Column width={3}>
-							<Form>
-								<Form.Field>
-									<Form.Input
-										placeholder='Origin Station code'
-										onChange={this.changeInOriginForm}
-										value={origin}
-									/>
-								</Form.Field>
-							</Form>
+						<Grid.Column width={3} className="center">
+							<StyledSegment >
+								<Form>
+									<Form.Field>
+										<Form.Input
+											placeholder='Origin Station code'
+											onChange={this.changeInOriginForm}
+											value={origin}
+										/>
+									</Form.Field>
+								</Form>
+							</StyledSegment>
 						</Grid.Column>
 						<Grid.Column width={3}>
 							<Form>
@@ -207,7 +210,10 @@ class UserForm extends React.Component {
 								) : null}
 								{trains !== null && trains.length === 0 && alternateTrains === null ? (
 									<div>
-										No direct trains to show<br />{' '}
+										<div class="text-center h2 my-2">
+											<h2>No direct trains available</h2> 
+											<Icon size={128} icon={sad} />
+										</div> 
 										<Button onClick={this.searchAlternateTrains}>
 											Search for Alternate Route?
 										</Button>
@@ -240,8 +246,12 @@ const StyledCalendar = styled(Calendar)`
 	width: 100% !important;
 `;
 const StyledGrid = styled(Grid)`
-    padding-top: 2% !important;
-    height: 130px !important;
+	background-color: #f6f7f9 !important;
+	color: black;
+`;
+
+const StyledSegment = styled(Segment)`
+    //padding-top: 2%;
 	background-color: #f6f7f9 !important;
 	color: black;
 `;
