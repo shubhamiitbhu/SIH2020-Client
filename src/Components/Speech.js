@@ -6,7 +6,9 @@ import API from '../utils/API.js';
 const Speech = (props) => {
 	const { onSpeechEnd } = props;
 	const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+	console.log(SpeechRecognition);
 	const recognition = new SpeechRecognition();
+
 
 	const listenSpeech = () => {
 		recognition.start();
