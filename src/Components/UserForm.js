@@ -115,7 +115,7 @@ class UserForm extends React.Component {
 		const day = dateSplit[2];
 		const year = dateSplit[3];
 
-		const senderDate = day.toString() + ' ' + month.toLowerCase().toString() + ' ' + year.toString();
+		const senderDate = day.toString().slice(0, 2) + ' ' + month.toLowerCase().toString() + ' ' + year.toString();
 		this.setState({
 			date: senderDate,
 			calenderView: 'none',
