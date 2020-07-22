@@ -18,8 +18,8 @@ render() {
     <Router>
       <MDBNavbar  expand="md" className="scrolling-navbar z-depth-0" color="blue">
         <MDBNavbarBrand className="p-0">
-          <img className="mr-2" src="./magic.png" style={{width:2.5+'rem'}} />
-          <span className="align-middle text-white" style={{fontWeight:600, fontSize:1.5+'rem'}} >Rail Genie</span>
+          <img className="mr-2" src="./magic.png" style={{width:2.75+'rem'}} />
+          <span className="align-middle text-white" style={{fontWeight:600, fontSize:1.75+'rem'}} >Rail Genie</span>
         </MDBNavbarBrand>
         {/*<MDBNavbarToggler onClick={this.toggleCollapse} />
         <MDBCollapse id="navbarCollapse3" isOpen={this.state.isOpen} navbar>
