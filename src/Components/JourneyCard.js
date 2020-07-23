@@ -78,14 +78,14 @@ class JourneyCard extends React.Component {
 						<Grid>
 							<Grid.Row>
 								<Grid.Column width={5}>
-									<FeedbackCard ratings={ratings} />
+									<FeedbackCard ratings={ratings} key={1} />
 								</Grid.Column>
 								<Divider vertical />
 								<Grid.Column width={5}>
-									<FareCalculator ratings={ratings} />
+									<FareCalculator ratings={ratings} key={2} />
 								</Grid.Column>
 								<Grid.Column width={5}>
-									<FareCalculator ratings={ratings} />
+									<FareCalculator ratings={ratings} key={3} />
 								</Grid.Column>
 							</Grid.Row>
 						</Grid>

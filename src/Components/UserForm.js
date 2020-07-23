@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Button, Grid, Popup, Segment } from 'semantic-ui-react';
 import { Icon } from 'react-icons-kit';
-import {sad} from 'react-icons-kit/icomoon/sad'
+import { sad } from 'react-icons-kit/icomoon/sad';
 import { calendar } from 'react-icons-kit/icomoon/calendar';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -74,7 +74,11 @@ class UserForm extends React.Component {
 	};
 
 	speechToTextResult = async (origin, destination, date) => {
-		this.setState({ loading: true });
+		if (date === undefined) {
+			this.setState({ origin: origin, destination: destination, loading: true });
+		} else {
+			this.setState({ origin: origin, destination: destination, date: date, loading: true });
+		}
 		console.log(origin);
 		const body = { origin: origin, destination: destination, date: date };
 		try {
@@ -131,8 +135,8 @@ class UserForm extends React.Component {
 				<StyledGrid stackable padded>
 					<Grid.Row>
 						<Grid.Column width={2} />
-						<Grid.Column width={3} className="center">
-							<StyledSegment >
+						<Grid.Column width={3} className='center'>
+							<StyledSegment>
 								<Form>
 									<Form.Field>
 										<Form.Input
@@ -210,10 +214,10 @@ class UserForm extends React.Component {
 								) : null}
 								{trains !== null && trains.length === 0 && alternateTrains === null ? (
 									<div>
-										<div class="text-center h2 my-2">
-											<h2>No direct trains available</h2> 
+										<div class='text-center h2 my-2'>
+											<h2>No direct trains available</h2>
 											<Icon size={128} icon={sad} />
-										</div> 
+										</div>
 										<Button onClick={this.searchAlternateTrains}>
 											Search for Alternate Route?
 										</Button>
