@@ -4,7 +4,7 @@ import { Table, Rating, TableBody } from 'semantic-ui-react';
 const FeedbackCard = (ratings) => {
 	return (
 		<React.Fragment>
-			<Table collapsing>
+			<Table collapsing style={{margin:"auto"}}>
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell singleLine>Parameters</Table.HeaderCell>

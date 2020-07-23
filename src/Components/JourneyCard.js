@@ -1,12 +1,12 @@
 import React from 'react';
-import { Grid, Button, Segment, Header, Divider, Icon } from 'semantic-ui-react';
+import { Grid, Button, Segment, Header, Divider, Icon, Card } from 'semantic-ui-react';
 import styled from 'styled-components';
 import Collapsible from 'react-collapsible';
 
 import FeedbackCard from './FeedbackCard.js';
 import FareCalculator from './FareCalculator.js';
 
-const ratings = [ [ 'Security', 2.5 ], [ 'Pentry', 4.3 ], [ 'Hygiene', 3 ] ];
+const ratings = [ [ 'Security', 2.5 ], [ 'Pantry', 4.3 ], [ 'Hygiene', 3 ] ];
 
 class JourneyCard extends React.Component {
 	state = {
@@ -34,11 +34,11 @@ class JourneyCard extends React.Component {
 		} = this.props.train;
 		return (
 			<React.Fragment>
-				<StyledSegment clearing>
+				<StyledSegment>
 					<StyledTrainName as='h3'>
 						{number} - {name}
 					</StyledTrainName>
-					<Grid>
+					<Grid padded stackable>
 						<Grid.Row>
 							<Grid.Column width={3}>
 								<Header as='h4'>
@@ -53,13 +53,13 @@ class JourneyCard extends React.Component {
 							<Grid.Column width={3}>
 								<Header as='h4'>
 									<StyledIcon name='stopwatch' />
-									{duration}
+									{duration} Hrs
 								</Header>
 							</Grid.Column>
 							<Grid.Column width={3}>
 								<Header as='h4'>
 									<StyledIcon name='road' />
-									{totalDistance} kms
+									{totalDistance} Kms
 								</Header>
 							</Grid.Column>
 							<Grid.Column width={4}>
@@ -69,23 +69,60 @@ class JourneyCard extends React.Component {
 									icon='angle down'
 									onClick={this.changeCollapsible}
 								/>
-								<Button size='mini' content='Book' />
+								<Button size='mini' style={{background:"#2196f3", color:"#fff"}} content='Book' />
 							</Grid.Column>
 						</Grid.Row>
 					</Grid>
 					<Collapsible open={collapsible} transitionTime={200}>
 						<Divider horizontal>Journey Details</Divider>
-						<Grid>
+						<Grid padded centered stackable>
 							<Grid.Row>
-								<Grid.Column width={5}>
-									<FeedbackCard ratings={ratings} />
+								<Grid.Column width={4}>
+									<FeedbackCard  ratings={ratings} />
 								</Grid.Column>
-								<Divider vertical />
-								<Grid.Column width={5}>
-									<FareCalculator ratings={ratings} />
-								</Grid.Column>
-								<Grid.Column width={5}>
-									<FareCalculator ratings={ratings} />
+								<Grid.Column width={12}>
+									<Card.Group centered>
+										<Card style={{textAlign:"center",width:"unset"}}>
+											<Card.Content>
+												<Card.Header>SL</Card.Header>
+											</Card.Content>
+											<Card.Content extra>
+												<Button basic color='blue'>
+													Check
+												</Button>
+											</Card.Content>
+										</Card>
+										<Card style={{textAlign:"center",width:"unset"}}>
+											<Card.Content>
+												<Card.Header>CC</Card.Header>
+											</Card.Content>
+											<Card.Content extra>
+												<Button basic color='blue'>
+													Check
+												</Button>
+											</Card.Content>
+										</Card>
+										<Card style={{textAlign:"center",width:"unset"}}>
+											<Card.Content>
+												<Card.Header>3A</Card.Header>
+											</Card.Content>
+											<Card.Content extra>
+												<Button basic color='blue'>
+													Check
+												</Button>
+											</Card.Content>
+										</Card>
+										<Card style={{textAlign:"center",width:"unset"}}>
+											<Card.Content>
+												<Card.Header>2A</Card.Header>
+											</Card.Content>
+											<Card.Content extra>
+												<Button basic color='blue'>
+													Check
+												</Button>
+											</Card.Content>
+										</Card>
+									</Card.Group>
 								</Grid.Column>
 							</Grid.Row>
 						</Grid>
