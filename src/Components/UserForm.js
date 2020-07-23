@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Button, Grid, Popup } from 'semantic-ui-react';
+import { Form, Button, Grid, Popup, Modal } from 'semantic-ui-react';
 import { Icon } from 'react-icons-kit';
 import {sad} from 'react-icons-kit/icomoon/sad'
 import {loop} from 'react-icons-kit/icomoon/loop'
@@ -16,6 +16,8 @@ import API from '../utils/API';
 import JourneyCard from './JourneyCard.js';
 import AlternateTrains from './AlternateTrains.js';
 import Speech from './Speech.js';
+
+import { Header, Image } from 'semantic-ui-react'
 
 class UserForm extends React.Component {
 	state = {
@@ -237,7 +239,7 @@ class UserForm extends React.Component {
 						<Grid.Column width={3}/>
 					</Grid.Row>
 				</StyledGrid>
-				{loading === true ? <Loader active inline='centered' /> : null}
+				{/* {loading === true ? <Loader active inline='centered' /> : null} */}
 				<Grid centered >
 					<Grid.Row >
 						
@@ -266,12 +268,20 @@ class UserForm extends React.Component {
 						</Grid.Column>
 						
 					</Grid.Row>
+
 				</Grid>
 				<Speech
 					onSpeechEnd={(origin, destination, date) => {
 						this.speechToTextResult(origin, destination, date);
 					}}
 				/>
+				<Modal open={loading} close={loading == false} style={{top:"unset",left:"unset", height:"unset", textAlign:"center"}}>
+				    <Modal.Header style={{}}>Loading</Modal.Header>
+				    <Modal.Content image style={{justifyContent:"center"}}>
+				      <Image wrapped size='medium' src='./giftrain.gif' />
+				    </Modal.Content>
+  				</Modal>
+				
 			</React.Fragment>
 		);
 	}
@@ -290,6 +300,7 @@ const StyledGrid = styled(Grid)`
 	background-position: center bottom;
     background-size: 85%;
     background-repeat: no-repeat;
+	box-shadow:         0px 5px 10px 0px rgba(50, 50, 50, 0.2);
 
 `;
 const StyledForm = styled(Form)`
