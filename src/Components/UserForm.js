@@ -285,8 +285,11 @@ const StyledCalendar = styled(Calendar)`
 	margin-right: auto !important;
 `;
 const StyledGrid = styled(Grid)`
-	background-color: #2196f3 ;
 	color: black;
+	background: url("./silhouette.png"), #2196f3;
+	background-position: center bottom;
+    background-size: 85%;
+    background-repeat: no-repeat;
 
 `;
 const StyledForm = styled(Form)`
