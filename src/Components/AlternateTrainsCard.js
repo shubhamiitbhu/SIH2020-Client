@@ -1,9 +1,7 @@
 import React from 'react';
-import { Grid, Button, Segment, Header, Divider, Icon } from 'semantic-ui-react';
+import { Divider } from 'semantic-ui-react';
 
 import JourneyCard from './JourneyCard.js';
-
-import styled from 'styled-components';
 
 class AlternateTrainsCard extends React.Component {
 	render() {

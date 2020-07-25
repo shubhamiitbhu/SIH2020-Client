@@ -4,20 +4,17 @@ import { Icon } from 'react-icons-kit';
 import { sad } from 'react-icons-kit/icomoon/sad';
 import { loop } from 'react-icons-kit/icomoon/loop';
 import { arrowRight2 } from 'react-icons-kit/icomoon/arrowRight2';
-import { mic } from 'react-icons-kit/icomoon/mic';
 import { calendar } from 'react-icons-kit/icomoon/calendar';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import styled from 'styled-components';
 import Calendar from 'react-calendar';
-import { Loader } from 'semantic-ui-react';
 
 import API from '../utils/API';
 import JourneyCard from './JourneyCard.js';
 import AlternateTrains from './AlternateTrains.js';
 import Speech from './Speech.js';
 
-import { Header, Image } from 'semantic-ui-react';
+import { Image } from 'semantic-ui-react';
 
 class UserForm extends React.Component {
 	state = {
@@ -38,7 +35,6 @@ class UserForm extends React.Component {
 		const day = dateSplit[2];
 		const year = dateSplit[3];
 		const senderDate = day.toString() + ' ' + month.toLowerCase().toString() + ' ' + year.toString();
-		console.log(senderDate);
 		this.setState({
 			date: senderDate,
 		});
@@ -148,7 +144,7 @@ class UserForm extends React.Component {
 							<span style={{ fontSize: 1.25 + 'rem', fontWeight: 100, color: 'white' }}>
 								{' '}
 								Travel anywhere, anytime on the lifeline of the Nation{' '}
-								<i style={{ width: 1 + 'rem' }} class='in flag' />
+								<i style={{ width: 1 + 'rem' }} className='in flag' />
 							</span>
 						</Grid.Column>
 					</Grid.Row>
@@ -239,16 +235,11 @@ class UserForm extends React.Component {
 								</Grid.Column>
 								<Grid.Column width={3} />
 								<Grid.Column width={2}>
-									<SubmitButton
-										circular
-										style={{ padding: 0.5 + 'rem', background: '#fff' }}
-										type='submit'
-										onClick={(e) => {
-											this.submitData(e);
+									<Speech
+										onSpeechEnd={(origin, destination, date) => {
+											this.speechToTextResult(origin, destination, date);
 										}}
-									>
-										<Icon size={40} icon={mic} />
-									</SubmitButton>
+									/>
 								</Grid.Column>
 							</Grid>
 						</Grid.Column>
@@ -266,7 +257,7 @@ class UserForm extends React.Component {
 									))
 								) : null}
 								{trains !== null && trains.length === 0 && alternateTrains === null ? (
-									<div class='text-center'>
+									<div className='text-center'>
 										<h2>No direct trains available</h2>
 										<Icon size={128} icon={sad} />
 										<br />
@@ -283,14 +274,10 @@ class UserForm extends React.Component {
 						</Grid.Column>
 					</Grid.Row>
 				</Grid>
-				<Speech
-					onSpeechEnd={(origin, destination, date) => {
-						this.speechToTextResult(origin, destination, date);
-					}}
-				/>
+
 				<Modal
 					open={loading}
-					close={loading == false}
+					close={loading === false}
 					style={{ top: 'unset', left: 'unset', height: 'unset', textAlign: 'center' }}
 				>
 					<Modal.Header style={{}}>Loading</Modal.Header>

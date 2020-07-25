@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import Collapsible from 'react-collapsible';
 
 import FeedbackCard from './FeedbackCard.js';
-import FareCalculator from './FareCalculator.js';
 
 const ratings = [ [ 'Security', 2.5 ], [ 'Pantry', 4.3 ], [ 'Hygiene', 3 ] ];
 
@@ -153,7 +152,5 @@ const StyledDot = styled.span`
   display: inline-block;
 }
 `;
-
-const StyledHorizontalLine = styled.hr`border: 0px 0px 1px 0px;`;
 
 export default JourneyCard;
