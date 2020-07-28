@@ -1,39 +1,30 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect } from 'react';
+import RasaAPI from '../utils/RasaAPI.js';
+import API from '../utils/API.js';
 import { Icon } from 'react-icons-kit';
 import { mic } from 'react-icons-kit/icomoon/mic';
-import { Button, Modal, Grid, Image } from 'semantic-ui-react';
+import styled from 'styled-components';
+import { Button } from 'semantic-ui-react';
 import firebase from 'firebase/app';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'firebase/firestore';
-import styled from 'styled-components';
-
-import RasaAPI from '../utils/RasaAPI.js';
-import API from '../utils/API.js';
-import UserContext from '../contexts/UserContext';
 
 var database;
 const Speech = (props) => {
-	const [ isOpen, setIsOpen ] = useState(false);
-	const userContext = useContext(UserContext);
-
-	const { language } = userContext;
 	useEffect(() => {
 		database = firebase.firestore();
 	}, []);
 
 	const { onSpeechEnd } = props;
 	const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-	var recognition = new SpeechRecognition();
-	recognition.lang = language;
+	const recognition = new SpeechRecognition();
 
 	const listenSpeech = () => {
-		setIsOpen(true);
 		recognition.start();
 	};
 
 	const stopListnening = () => {
-		setIsOpen(false);
 		recognition.stop();
 	};
 
@@ -41,13 +32,13 @@ const Speech = (props) => {
 		var last = event.results.length - 1;
 		var transcript = event.results[last][0].transcript;
 
-		const body = { text: transcript, language: language };
+		const body = { text: transcript };
 		const entityExtraction = await RasaAPI.post('/', body);
 
 		const today = new Date();
 		var data = {};
 		data['date'] = today.getDate().toString() + ' jul ' + today.getFullYear();
-		const iterate = entityExtraction.data;
+		const iterate = entityExtraction.data.entities;
 		for (var key in iterate) {
 			data[iterate[key]['entity']] = iterate[key]['value'];
 		}
@@ -73,12 +64,11 @@ const Speech = (props) => {
 		} catch (error) {
 			toast.error('One or more entites are missing');
 		}
-		setIsOpen(false);
+
 		stopListnening();
 	};
 
 	recognition.onspeechend = () => {
-		setIsOpen(false);
 		recognition.stop();
 	};
 
@@ -96,30 +86,8 @@ const Speech = (props) => {
 				{' '}
 				<Icon size={40} icon={mic} />
 			</Button>
-
-			<Grid.Row>
-				<Grid.Column width={5} />
-				<Grid.Column width={6}>
-					<StyledModal open={isOpen} size='small'>
-						<Modal.Header>Our bot, Adil, is Listening to your queries</Modal.Header>
-						<StyledImage wrapped size='large' src='./microphone.gif' />
-					</StyledModal>
-				</Grid.Column>
-				<Grid.Column width={5} />
-			</Grid.Row>
 		</React.Fragment>
 	);
 };
-
-const StyledModal = styled(Modal)`
-	margin-left: 25% !important;
-	top: 30%;
-	height: 400px !important;
-`;
-
-const StyledImage = styled(Image)`
-	margin-left: 20%;
-	
-`;
 
 export default Speech;

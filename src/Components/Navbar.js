@@ -21,20 +21,6 @@ class NavbarPage extends Component {
 							Rail Genie
 						</span>
 					</MDBNavbarBrand>
-					{/*<MDBNavbarToggler onClick={this.toggleCollapse} />
-        <MDBCollapse id="navbarCollapse3" isOpen={this.state.isOpen} navbar>
-          <MDBNavbarNav left>
-            <MDBNavItem active>
-              <MDBNavLink to="#!">Home</MDBNavLink>
-            </MDBNavItem>
-            <MDBNavItem>
-              <MDBNavLink to="#!">Features</MDBNavLink>
-            </MDBNavItem>
-            <MDBNavItem>
-              <MDBNavLink to="#!">Pricing</MDBNavLink>
-            </MDBNavItem>
-          </MDBNavbarNav>
-        </MDBCollapse>*/}
 				</MDBNavbar>
 			</Router>
 		);

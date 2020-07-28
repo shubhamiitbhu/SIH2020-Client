@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Button, Grid, Popup, Modal } from 'semantic-ui-react';
+import { Form, Button, Grid, Popup, Modal, Dropdown, Image, Radio } from 'semantic-ui-react';
 import { Icon } from 'react-icons-kit';
 import { sad } from 'react-icons-kit/icomoon/sad';
 import { loop } from 'react-icons-kit/icomoon/loop';
@@ -13,8 +13,26 @@ import API from '../utils/API';
 import JourneyCard from './JourneyCard.js';
 import AlternateTrains from './AlternateTrains.js';
 import Speech from './Speech.js';
+import WithContexts from './WithContexts.js';
+import Features from './Features.js';
 
-import { Image } from 'semantic-ui-react';
+const languages = [
+	{
+		key: 'en',
+		text: 'English',
+		value: 'en',
+	},
+	{
+		key: 'hi-In',
+		text: 'हिन्दी',
+		value: 'hi-In',
+	},
+	{
+		key: 'ml',
+		text: 'Malyalam',
+		value: 'ml',
+	},
+];
 
 class UserForm extends React.Component {
 	state = {
@@ -42,18 +60,22 @@ class UserForm extends React.Component {
 
 	searchAlternateTrains = async (event) => {
 		event.preventDefault();
-		this.setState({ loading: true });
-		const { origin, destination, date } = this.state;
-		const body = { origin: origin, destination: destination, date: date };
-		try {
-			const trains = await API.post(`/alternate-trains/`, body);
-			this.setState({
-				alternateTrains: trains.data,
-				loading: false,
-			});
-		} catch (error) {
-			toast.error('Invalid Station Details');
-			this.setState({ loading: false });
+		if (this.state.alternateTrains !== null) {
+			this.setState({ alternateTrains: null });
+		} else {
+			this.setState({ loading: true });
+			const { origin, destination, date } = this.state;
+			const body = { origin: origin, destination: destination, date: date };
+			try {
+				const trains = await API.post(`/alternate-trains/`, body);
+				this.setState({
+					alternateTrains: trains.data,
+					loading: false,
+				});
+			} catch (error) {
+				toast.error('Invalid Station Details');
+				this.setState({ loading: false });
+			}
 		}
 	};
 
@@ -112,6 +134,11 @@ class UserForm extends React.Component {
 		});
 	};
 
+	changeLanguage = (event, { value }) => {
+		event.preventDefault();
+		this.props.context.changeLanguage(value);
+	};
+
 	changeDate = (value) => {
 		value = value.toString();
 		const dateSplit = value.split(' ');
@@ -130,7 +157,6 @@ class UserForm extends React.Component {
 
 	render() {
 		const { trains, alternateTrains, origin, date, destination, loading } = this.state;
-
 		return (
 			<React.Fragment>
 				<StyledGrid className='middle aligned stackable padded' style={{ paddingBottom: 3 + 'rem' }}>
@@ -229,7 +255,7 @@ class UserForm extends React.Component {
 											this.submitData(e);
 										}}
 									>
-										<span style={{ fontSize: 3 + 'rem' }}>Go!</span>
+										<span style={{ fontSize: 2 + 'rem' }}>Go!</span>
 										<Icon size={40} icon={arrowRight2} style={{ display: 'inline' }} />
 									</SubmitButton>
 								</Grid.Column>
@@ -243,10 +269,23 @@ class UserForm extends React.Component {
 								</Grid.Column>
 							</Grid>
 						</Grid.Column>
-						<Grid.Column width={3} />
 					</Grid.Row>
 				</StyledGrid>
-				{/* {loading === true ? <Loader active inline='centered' /> : null} */}
+				<br />
+				<Grid centered>
+					<Grid.Row>
+						<Grid.Column width={5} />
+						<Grid.Column width={4}>
+							<Dropdown placeholder='English' options={languages} onChange={this.changeLanguage} />
+						</Grid.Column>
+						<Grid.Column width={2}>
+							<Radio toggle onChange={this.searchAlternateTrains} />
+						</Grid.Column>
+						<Grid.Column width={5} />
+					</Grid.Row>
+				</Grid>
+
+				{trains === null ? <Features /> : null}
 				<Grid centered>
 					<Grid.Row>
 						<Grid.Column computer={10} tablet={12}>
@@ -258,13 +297,14 @@ class UserForm extends React.Component {
 								) : null}
 								{trains !== null && trains.length === 0 && alternateTrains === null ? (
 									<div className='text-center'>
+										<Grid.Row>
+											<Grid.Column width={1} />
+											<Grid.Column width={3} />
+											<Grid.Column width={12} />
+										</Grid.Row>
 										<h2>No direct trains available</h2>
 										<Icon size={128} icon={sad} />
 										<br />
-										<br />
-										<Button style={{ marginRight: 0 }} onClick={this.searchAlternateTrains}>
-											Search for Alternate Route?
-										</Button>
 									</div>
 								) : null}
 								{alternateTrains !== null && alternateTrains.length !== 0 ? (
@@ -311,4 +351,4 @@ const StyledForm = styled(Form)`
 
 `;
 
-export default UserForm;
+export default WithContexts(UserForm);
