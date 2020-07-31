@@ -1,22 +1,16 @@
-import React, { useEffect } from 'react';
-import RasaAPI from '../utils/RasaAPI.js';
-import API from '../utils/API.js';
+import React, { useState } from 'react';
+import RasaEnquiryAPI from '../utils/RasaEnquiryAPI.js';
 import { Icon } from 'react-icons-kit';
 import { mic } from 'react-icons-kit/icomoon/mic';
-import styled from 'styled-components';
+import axios from 'axios';
 import { Button } from 'semantic-ui-react';
-import firebase from 'firebase/app';
+
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
-import 'firebase/firestore';
+import { ToastContainer } from 'react-toastify';
 
-var database;
-const Speech = (props) => {
-	useEffect(() => {
-		database = firebase.firestore();
-	}, []);
+const Enquiry = (props) => {
+	const [ enquiryComponent, setEnquiryComponent ] = useState(null);
 
-	const { onSpeechEnd } = props;
 	const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 	const recognition = new SpeechRecognition();
 
@@ -32,38 +26,13 @@ const Speech = (props) => {
 		var last = event.results.length - 1;
 		var transcript = event.results[last][0].transcript;
 
-		const body = { text: transcript };
-		const entityExtraction = await RasaAPI.post('/', body);
-
+		const body = { text: 'I want to know running status of 15159' };
+		const entityExtraction = (await RasaEnquiryAPI.post('/', body)).data[0].value;
+		const enquiryComponentasHTML = await axios.get(
+			`https://erail.in/train-running-status/${entityExtraction}?date=29-Jul-2020&from=STW`,
+		);
+		setEnquiryComponent(enquiryComponentasHTML);
 		const today = new Date();
-		var data = {};
-		data['date'] = today.getDate().toString() + ' jul ' + today.getFullYear();
-		const iterate = entityExtraction.data.entities;
-		for (var key in iterate) {
-			data[iterate[key]['entity']] = iterate[key]['value'];
-		}
-
-		const originBody = { name: data['orig'] };
-		const destinationBody = { name: data['dest'] };
-
-		await database.collection('Logger').add({
-			time: new Date().getTime().toString(),
-			transcript: transcript,
-			destination: data['dest'] !== undefined ? data['dest'] : 'Not Captured',
-			origin: data['orig'] !== undefined ? data['orig'] : 'Not Captured',
-			date: data['date'] !== undefined ? data['date'] : 'Not Captured',
-			flagged:
-				data['orig'] !== undefined && data['dest'] !== undefined && data['date'] !== undefined ? false : true,
-		});
-		try {
-			var origin = await API.post('/station-name-to-code', originBody);
-			var destination = await API.post('/station-name-to-code', destinationBody);
-			if (origin !== null && destination !== null) {
-				onSpeechEnd(origin.data, destination.data, data['date']);
-			}
-		} catch (error) {
-			toast.error('One or more entites are missing');
-		}
 
 		stopListnening();
 	};
@@ -86,8 +55,9 @@ const Speech = (props) => {
 				{' '}
 				<Icon size={40} icon={mic} />
 			</Button>
+			{enquiryComponent}
 		</React.Fragment>
 	);
 };
 
-export default Speech;
+export default Enquiry;
