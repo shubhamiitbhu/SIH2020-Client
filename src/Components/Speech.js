@@ -15,6 +15,7 @@ import UserContext from '../contexts/UserContext';
 var database;
 const Speech = (props) => {
 	const [ isOpen, setIsOpen ] = useState(false);
+	const [ abort, setabort ] = useState(false);
 	const userContext = useContext(UserContext);
 
 	const { language } = userContext;
@@ -29,12 +30,19 @@ const Speech = (props) => {
 
 	const listenSpeech = () => {
 		setIsOpen(true);
+		setabort(false);
+		localStorage.setItem("CALLAPI","YES")
 		recognition.start();
 	};
 
 	const stopListnening = () => {
 		setIsOpen(false);
 		recognition.stop();
+	};
+	const abortRecognition = () => {
+		setabort(true);
+		localStorage.setItem("CALLAPI","NO");
+		recognition.abort();
 	};
 
 	recognition.onresult = async (event) => {
@@ -67,7 +75,7 @@ const Speech = (props) => {
 		try {
 			var origin = await API.post('/station-name-to-code', originBody);
 			var destination = await API.post('/station-name-to-code', destinationBody);
-			if (origin !== null && destination !== null) {
+			if (origin !== null && destination !== null&&localStorage.getItem('CALLAPI')=='YES') {
 				onSpeechEnd(origin.data, destination.data, data['date']);
 			}
 		} catch (error) {
@@ -101,8 +109,13 @@ const Speech = (props) => {
 				<Grid.Column width={5} />
 				<Grid.Column width={6}>
 					<StyledModal open={isOpen} size='small'>
-						<Modal.Header>Our bot, Adil, is Listening to your queries</Modal.Header>
-						<StyledImage wrapped size='large' src='./microphone.gif' />
+						<Modal.Header>{abort?"Aborting! please wait for a while..":"Our bot, Adil, is Listening to your queries"}</Modal.Header>
+						<StyledImage wrapped size='large' src={abort?'./trash.gif':'./microphone.gif'}  />
+						<StyledModal.Actions>
+						<Button color='red' onClick={abortRecognition}>
+	           Cancel
+	         </Button>
+	    </StyledModal.Actions>
 					</StyledModal>
 				</Grid.Column>
 				<Grid.Column width={5} />
@@ -113,13 +126,13 @@ const Speech = (props) => {
 
 const StyledModal = styled(Modal)`
 	margin-left: 25% !important;
-	top: 30%;
-	height: 400px !important;
+	top: 20%;
+	height: 450px !important;
 `;
 
 const StyledImage = styled(Image)`
 	margin-left: 20%;
-	
+	height: 330px !important;
 `;
 
 export default Speech;

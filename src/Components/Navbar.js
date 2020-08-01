@@ -10,12 +10,14 @@ class NavbarPage extends Component {
 	toggleCollapse = () => {
 		this.setState({ isOpen: !this.state.isOpen });
 	};
-
+ redirecttohome=()=>{
+	 window.location.href = "/";
+ }
 	render() {
 		return (
 			<Router>
 				<MDBNavbar expand='md' className='scrolling-navbar z-depth-0' color='blue'>
-					<MDBNavbarBrand className='p-0'>
+					<MDBNavbarBrand className='p-0' onClick={this.redirecttohome} href="/">
 						<img alt='no-alt' className='mr-2' src='./magic.png' style={{ width: 2.75 + 'rem' }} />
 						<span className='align-middle text-white' style={{ fontWeight: 600, fontSize: 1.75 + 'rem' }}>
 							Rail Genie
