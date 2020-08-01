@@ -4,7 +4,7 @@ import { Grid, Icon } from 'semantic-ui-react';
 class Features extends React.Component {
 	render() {
 		return (
-			<Grid>
+			<Grid padded>
 				<Grid.Row>
 					<Grid.Column width={4} />
 					<Grid.Column width={2}>

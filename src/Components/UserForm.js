@@ -174,6 +174,9 @@ class UserForm extends React.Component {
 							</span>
 						</Grid.Column>
 					</Grid.Row>
+					{/* <Grid.Row>
+						<Radio toggle onChange={this.searchAlternateTrains} />
+					</Grid.Row> */}
 					<Grid.Row>
 						<Grid.Column width={1} style={{ padding: '0px !important' }} />
 						<Grid.Column width={4}>
@@ -272,21 +275,21 @@ class UserForm extends React.Component {
 					</Grid.Row>
 				</StyledGrid>
 				<br />
-				<Grid centered>
+				<Grid centered padded>
 					<Grid.Row>
-						<Grid.Column width={5} />
-						<Grid.Column width={4}>
+						
+						<Grid.Column width={6}>
 							<Dropdown placeholder='English' options={languages} onChange={this.changeLanguage} />
 						</Grid.Column>
-						<Grid.Column width={2}>
+						<Grid.Column width={6}>
 							<Radio toggle onChange={this.searchAlternateTrains} />
 						</Grid.Column>
-						<Grid.Column width={5} />
+						
 					</Grid.Row>
 				</Grid>
 
 				{trains === null ? <Features /> : null}
-				<Grid centered>
+				<Grid padded>
 					<Grid.Row>
 						<Grid.Column computer={10} tablet={12}>
 							<span>

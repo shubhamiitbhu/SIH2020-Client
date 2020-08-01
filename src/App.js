@@ -30,7 +30,7 @@ class App extends React.Component {
 					<Router>
 						<Switch>
 							<Route path='/' exact>
-								<UserForm />
+								<UserForm style={{width:100+'%'}} />
 							</Route>
 							<Route path='/logger' exact>
 								<Logger />
