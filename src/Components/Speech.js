@@ -79,7 +79,7 @@ const Speech = (props) => {
 				onSpeechEnd(origin.data, destination.data, data['date']);
 			}
 		} catch (error) {
-			toast.error('One or more entites are missing');
+			toast.error('Unable to detect! Please try again later...');
 		}
 		setIsOpen(false);
 		stopListnening();
