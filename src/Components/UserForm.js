@@ -339,7 +339,7 @@ const StyledCalendar = styled(Calendar)`
 `;
 const StyledGrid = styled(Grid)`
 	color: black;
-	background: url("./silhouette.png"), #2196f3;
+	background: url("./tesy.png"), #2196f3;
 	background-position: center bottom;
     background-size: 85%;
     background-repeat: no-repeat;
