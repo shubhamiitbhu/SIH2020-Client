@@ -311,7 +311,7 @@ class UserForm extends React.Component {
 
 				{trains === null ? <Features /> : null}
 				<Grid padded>
-					<Grid.Row>
+					<Grid.Row centered>
 						<Grid.Column computer={10} tablet={12}>
 							<span>
 								{trains !== null ? (
