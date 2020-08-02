@@ -13,9 +13,9 @@ import API from '../utils/API';
 import JourneyCard from './JourneyCard.js';
 import AlternateTrains from './AlternateTrains.js';
 import Speech from './Speech.js';
-import EnquirySpeech from './EnquirySpeech.js';
 import WithContexts from './WithContexts.js';
 import Features from './Features.js';
+import NearbyTrains from './NearbyTrains.js';
 
 const languages = [
 	{
@@ -42,8 +42,10 @@ class UserForm extends React.Component {
 		date: '',
 		trains: null,
 		alternateTrains: null,
+		nearbyTrains: false,
 		loading: false,
 		record: false,
+		radioValue: 'direct',
 	};
 
 	componentDidMount() {
@@ -59,25 +61,20 @@ class UserForm extends React.Component {
 		});
 	}
 
-	searchAlternateTrains = async (event) => {
-		event.preventDefault();
-		if (this.state.alternateTrains !== null) {
-			this.setState({ alternateTrains: null });
-		} else {
-			this.setState({ loading: true });
-			const { origin, destination, date } = this.state;
-			const body = { origin: origin, destination: destination, date: date };
-			try {
-				const trains = await API.post(`/alternate-trains/`, body);
-				console.log(trains.data);
-				this.setState({
-					alternateTrains: trains.data,
-					loading: false,
-				});
-			} catch (error) {
-				toast.error('Invalid Station Details');
-				this.setState({ loading: false });
-			}
+	searchAlternateTrains = async () => {
+		this.setState({ loading: true });
+		const { origin, destination, date } = this.state;
+		const body = { origin: origin, destination: destination, date: date };
+		try {
+			const trains = await API.post(`/alternate-trains/`, body);
+
+			this.setState({
+				alternateTrains: trains.data,
+				loading: false,
+			});
+		} catch (error) {
+			toast.error('Invalid Station Details');
+			this.setState({ loading: false });
 		}
 	};
 
@@ -113,7 +110,7 @@ class UserForm extends React.Component {
 				loading: true,
 			});
 		}
-		console.log(origin);
+
 		const body = { origin: origin, destination: destination, date: date };
 		try {
 			const trains = await API.post(`/direct-trains/`, body);
@@ -133,6 +130,8 @@ class UserForm extends React.Component {
 			destination: event.target.value.toUpperCase(),
 			trains: null,
 			alternateTrains: null,
+			nearbyTrains: false,
+			radioValue: 'direct',
 		});
 	};
 
@@ -142,6 +141,8 @@ class UserForm extends React.Component {
 			origin: event.target.value.toUpperCase(),
 			trains: null,
 			alternateTrains: null,
+			nearbyTrains: false,
+			radioValue: 'direct',
 		});
 	};
 
@@ -163,11 +164,27 @@ class UserForm extends React.Component {
 			date: senderDate,
 			calenderView: 'none',
 			trains: null,
+			nearbyTrains: false,
+			radioValue: 'direct',
 		});
 	};
 
+	changeRadio = (event, { value }) => {
+		event.preventDefault();
+		this.setState({ radioValue: value });
+
+		if (value === 'alternate') {
+			this.searchAlternateTrains();
+		}
+		if (value !== 'nearby') {
+			this.setState({ nearbyTrains: false });
+		} else if (value === 'nearby') {
+			this.setState({ nearbyTrains: true });
+		}
+	};
+
 	render() {
-		const { trains, alternateTrains, origin, date, destination, loading } = this.state;
+		const { trains, alternateTrains, origin, date, destination, loading, radioValue, nearbyTrains } = this.state;
 		return (
 			<React.Fragment>
 				<StyledGrid className='middle aligned stackable padded' style={{ paddingBottom: 3 + 'rem' }}>
@@ -304,25 +321,32 @@ class UserForm extends React.Component {
 						<Grid.Column width={6}>
 							{/* <Radio toggle onChange={this.searchAlternateTrains} /> */}
 							<Form style={{ display: 'flex', flexWrap: 'wrap' }}>
-								<Form.Field>
-									Selected value: <b>{this.state.value}</b>
-								</Form.Field>
+								Route Options:
 								<Form.Field>
 									<Radio
-										label='Choose this'
+										label='Direct'
 										name='radioGroup'
-										value='this'
-										checked={this.state.value === 'this'}
-										onChange={this.handleChange}
+										value='direct'
+										checked={radioValue === 'direct'}
+										onChange={this.changeRadio}
 									/>
-								</Form.Field>
+								</Form.Field>{' '}
 								<Form.Field>
 									<Radio
-										label='Or that'
+										label='Alternate'
 										name='radioGroup'
-										value='that'
-										checked={this.state.value === 'that'}
-										onChange={this.handleChange}
+										value='alternate'
+										checked={radioValue === 'alternate'}
+										onChange={this.changeRadio}
+									/>
+								</Form.Field>{' '}
+								<Form.Field>
+									<Radio
+										label='from Nearby stations'
+										name='radioGroup'
+										value='nearby'
+										checked={radioValue === 'nearby'}
+										onChange={this.changeRadio}
 									/>
 								</Form.Field>
 							</Form>
@@ -335,7 +359,7 @@ class UserForm extends React.Component {
 					<Grid.Row>
 						<Grid.Column computer={10} tablet={12}>
 							<span>
-								{trains !== null ? (
+								{trains !== null && radioValue === 'direct' ? (
 									trains.map((train, index) => (
 										<JourneyCard train={train} index={index} key={index} />
 									))
@@ -347,13 +371,19 @@ class UserForm extends React.Component {
 											<Grid.Column width={3} />
 											<Grid.Column width={12} />
 										</Grid.Row>
-										<h2>No direct trains available</h2>
+										<h2>No direct trains available, You can search for alternate trains</h2>
 										<Icon size={128} icon={sad} />
 										<br />
 									</div>
 								) : null}
-								{alternateTrains !== null && alternateTrains.length !== 0 ? (
+
+								{alternateTrains !== null &&
+								alternateTrains.length !== 0 &&
+								radioValue === 'alternate' ? (
 									<AlternateTrains trains={alternateTrains} />
+								) : null}
+								{radioValue === 'nearby' && nearbyTrains === true ? (
+									<NearbyTrains origin={origin} destination={destination} date={date} />
 								) : null}
 							</span>
 						</Grid.Column>

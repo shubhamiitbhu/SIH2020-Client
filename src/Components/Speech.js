@@ -31,7 +31,7 @@ const Speech = (props) => {
 	const listenSpeech = () => {
 		setIsOpen(true);
 		setabort(false);
-		localStorage.setItem("CALLAPI","YES")
+		localStorage.setItem('CALLAPI', 'YES');
 		recognition.start();
 	};
 
@@ -41,7 +41,7 @@ const Speech = (props) => {
 	};
 	const abortRecognition = () => {
 		setabort(true);
-		localStorage.setItem("CALLAPI","NO");
+		localStorage.setItem('CALLAPI', 'NO');
 		recognition.abort();
 	};
 
@@ -75,11 +75,11 @@ const Speech = (props) => {
 		try {
 			var origin = await API.post('/station-name-to-code', originBody);
 			var destination = await API.post('/station-name-to-code', destinationBody);
-			if (origin !== null && destination !== null&&localStorage.getItem('CALLAPI')=='YES') {
+			if (origin !== null && destination !== null && localStorage.getItem('CALLAPI') === 'YES') {
 				onSpeechEnd(origin.data, destination.data, data['date']);
 			}
 		} catch (error) {
-			toast.error('Unable to detect! Please try again later...');
+			toast.error('Unable to detect! Please try again');
 		}
 		setIsOpen(false);
 		stopListnening();
@@ -109,13 +109,19 @@ const Speech = (props) => {
 				<Grid.Column width={5} />
 				<Grid.Column width={6}>
 					<StyledModal open={isOpen} size='small'>
-						<Modal.Header>{abort?"Aborting! please wait for a while..":"Our bot, Adil, is Listening to your queries"}</Modal.Header>
-						<StyledImage wrapped size='large' src={abort?'./trash.gif':'./microphone.gif'}  />
+						<Modal.Header>
+							{abort ? (
+								'Aborting! please wait for a while..'
+							) : (
+								'Our bot, Adil, is Listening to your queries'
+							)}
+						</Modal.Header>
+						<StyledImage wrapped size='large' src={abort ? './trash.gif' : './microphone.gif'} />
 						<StyledModal.Actions>
-						<Button color='red' onClick={abortRecognition}>
-	           Cancel
-	         </Button>
-	    </StyledModal.Actions>
+							<Button color='red' onClick={abortRecognition}>
+								Cancel
+							</Button>
+						</StyledModal.Actions>
 					</StyledModal>
 				</Grid.Column>
 				<Grid.Column width={5} />

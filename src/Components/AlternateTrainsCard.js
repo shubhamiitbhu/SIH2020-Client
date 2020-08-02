@@ -6,8 +6,8 @@ import JourneyCard from './JourneyCard.js';
 class AlternateTrainsCard extends React.Component {
 	render() {
 		const { journey } = this.props;
-		console.log(journey);
-		const { originToConnection, connectionToDestination, timeGap, connection } = this.props.journey;
+
+		const { originToConnection, connectionToDestination, timeGap, connection } = journey;
 		return (
 			<React.Fragment>
 				<JourneyCard train={originToConnection} />
