@@ -279,7 +279,30 @@ class UserForm extends React.Component {
 							<Dropdown placeholder='English' options={languages} onChange={this.changeLanguage} />
 						</Grid.Column>
 						<Grid.Column width={6}>
-							<Radio toggle onChange={this.searchAlternateTrains} />
+							{/* <Radio toggle onChange={this.searchAlternateTrains} /> */}
+							<Form style={{display:"flex",flexWrap:"wrap"}}>
+								<Form.Field >
+								Selected value: <b>{this.state.value}</b>
+								</Form.Field>
+								<Form.Field >
+								<Radio
+									label='Choose this'
+									name='radioGroup'
+									value='this'
+									checked={this.state.value === 'this'}
+									onChange={this.handleChange}
+								/>
+								</Form.Field>
+								<Form.Field >
+								<Radio
+									label='Or that'
+									name='radioGroup'
+									value='that'
+									checked={this.state.value === 'that'}
+									onChange={this.handleChange}
+								/>
+								</Form.Field>
+							</Form>
 						</Grid.Column>
 						
 					</Grid.Row>
