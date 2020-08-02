@@ -273,21 +273,44 @@ class UserForm extends React.Component {
 					</Grid.Row>
 				</StyledGrid>
 				<br />
-				<Grid centered>
+				<Grid centered padded>
 					<Grid.Row>
-						<Grid.Column width={5} />
-						<Grid.Column width={4}>
+						
+						<Grid.Column width={6}>
 							<Dropdown placeholder='English' options={languages} onChange={this.changeLanguage} />
 						</Grid.Column>
-						<Grid.Column width={2}>
-							<Radio toggle onChange={this.searchAlternateTrains} />
+						<Grid.Column width={6}>
+							{/* <Radio toggle onChange={this.searchAlternateTrains} /> */}
+							<Form style={{display:"flex",flexWrap:"wrap"}}>
+								<Form.Field >
+								Selected value: <b>{this.state.value}</b>
+								</Form.Field>
+								<Form.Field >
+								<Radio
+									label='Choose this'
+									name='radioGroup'
+									value='this'
+									checked={this.state.value === 'this'}
+									onChange={this.handleChange}
+								/>
+								</Form.Field>
+								<Form.Field >
+								<Radio
+									label='Or that'
+									name='radioGroup'
+									value='that'
+									checked={this.state.value === 'that'}
+									onChange={this.handleChange}
+								/>
+								</Form.Field>
+							</Form>
 						</Grid.Column>
-						<Grid.Column width={5} />
+						
 					</Grid.Row>
 				</Grid>
 
 				{trains === null ? <Features /> : null}
-				<Grid centered>
+				<Grid padded>
 					<Grid.Row>
 						<Grid.Column computer={10} tablet={12}>
 							<span>
@@ -340,7 +363,7 @@ const StyledCalendar = styled(Calendar)`
 `;
 const StyledGrid = styled(Grid)`
 	color: black;
-	background: url("./silhouette.png"), #2196f3;
+	background: url("./tesy.png"), #2196f3;
 	background-position: center bottom;
     background-size: 85%;
     background-repeat: no-repeat;
