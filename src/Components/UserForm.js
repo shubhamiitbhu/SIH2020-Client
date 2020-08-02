@@ -13,6 +13,7 @@ import API from '../utils/API';
 import JourneyCard from './JourneyCard.js';
 import AlternateTrains from './AlternateTrains.js';
 import Speech from './Speech.js';
+import EnquirySpeech from './EnquirySpeech.js';
 import WithContexts from './WithContexts.js';
 import Features from './Features.js';
 
@@ -68,6 +69,7 @@ class UserForm extends React.Component {
 			const body = { origin: origin, destination: destination, date: date };
 			try {
 				const trains = await API.post(`/alternate-trains/`, body);
+				console.log(trains.data);
 				this.setState({
 					alternateTrains: trains.data,
 					loading: false,
@@ -98,9 +100,18 @@ class UserForm extends React.Component {
 
 	speechToTextResult = async (origin, destination, date) => {
 		if (date === undefined) {
-			this.setState({ origin: origin, destination: destination, loading: true });
+			this.setState({
+				origin: origin,
+				destination: destination,
+				loading: true,
+			});
 		} else {
-			this.setState({ origin: origin, destination: destination, date: date, loading: true });
+			this.setState({
+				origin: origin,
+				destination: destination,
+				date: date,
+				loading: true,
+			});
 		}
 		console.log(origin);
 		const body = { origin: origin, destination: destination, date: date };
@@ -163,11 +174,24 @@ class UserForm extends React.Component {
 					<Grid.Row>
 						<Grid.Column width={1} style={{ padding: 0 + '!important' }} />
 						<Grid.Column width={8}>
-							<h1 style={{ fontSize: 2.75 + 'rem', fontWeight: 700, color: 'white', margin: 0 }}>
+							<h1
+								style={{
+									fontSize: 2.75 + 'rem',
+									fontWeight: 700,
+									color: 'white',
+									margin: 0,
+								}}
+							>
 								{' '}
 								Search Trains{' '}
 							</h1>
-							<span style={{ fontSize: 1.25 + 'rem', fontWeight: 100, color: 'white' }}>
+							<span
+								style={{
+									fontSize: 1.25 + 'rem',
+									fontWeight: 100,
+									color: 'white',
+								}}
+							>
 								{' '}
 								Travel anywhere, anytime on the lifeline of the Nation{' '}
 								<i style={{ width: 1 + 'rem' }} className='in flag' />
@@ -272,20 +296,41 @@ class UserForm extends React.Component {
 					</Grid.Row>
 				</StyledGrid>
 				<br />
-				<Grid centered>
+				<Grid centered padded>
 					<Grid.Row>
-						<Grid.Column width={5} />
-						<Grid.Column width={4}>
+						<Grid.Column width={6}>
 							<Dropdown placeholder='English' options={languages} onChange={this.changeLanguage} />
 						</Grid.Column>
-						<Grid.Column width={2}>
-							<Radio toggle onChange={this.searchAlternateTrains} />
+						<Grid.Column width={6}>
+							{/* <Radio toggle onChange={this.searchAlternateTrains} /> */}
+							<Form style={{ display: 'flex', flexWrap: 'wrap' }}>
+								<Form.Field>
+									Selected value: <b>{this.state.value}</b>
+								</Form.Field>
+								<Form.Field>
+									<Radio
+										label='Choose this'
+										name='radioGroup'
+										value='this'
+										checked={this.state.value === 'this'}
+										onChange={this.handleChange}
+									/>
+								</Form.Field>
+								<Form.Field>
+									<Radio
+										label='Or that'
+										name='radioGroup'
+										value='that'
+										checked={this.state.value === 'that'}
+										onChange={this.handleChange}
+									/>
+								</Form.Field>
+							</Form>
 						</Grid.Column>
-						<Grid.Column width={5} />
 					</Grid.Row>
 				</Grid>
-
 				{trains === null ? <Features /> : null}
+
 				<Grid centered>
 					<Grid.Row>
 						<Grid.Column computer={10} tablet={12}>
@@ -318,7 +363,12 @@ class UserForm extends React.Component {
 				<Modal
 					open={loading}
 					close={loading === false}
-					style={{ top: 'unset', left: 'unset', height: 'unset', textAlign: 'center' }}
+					style={{
+						top: 'unset',
+						left: 'unset',
+						height: 'unset',
+						textAlign: 'center',
+					}}
 				>
 					<Modal.Header style={{}}>Loading</Modal.Header>
 					<Modal.Content image style={{ justifyContent: 'center' }}>
@@ -331,24 +381,23 @@ class UserForm extends React.Component {
 }
 
 const SubmitButton = styled(Button)`
-display: ${(props) => props.display}`;
+  display: ${(props) => props.display};
+`;
 
 const StyledCalendar = styled(Calendar)`
-	margin-left: auto !important;
-	margin-right: auto !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 `;
 const StyledGrid = styled(Grid)`
-	color: black;
-	background: url("./silhouette.png"), #2196f3;
-	background-position: center bottom;
-    background-size: 85%;
-    background-repeat: no-repeat;
-	box-shadow:         0px 5px 10px 0px rgba(50, 50, 50, 0.2);
-
+  color: black;
+  background: url("./silhouette.png"), #2196f3;
+  background-position: center bottom;
+  background-size: 85%;
+  background-repeat: no-repeat;
+  box-shadow: 0px 5px 10px 0px rgba(50, 50, 50, 0.2);
 `;
 const StyledForm = styled(Form)`
-	font-size: 1.5rem !important;
-
+  font-size: 1.5rem !important;
 `;
 
 export default WithContexts(UserForm);
