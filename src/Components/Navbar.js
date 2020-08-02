@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { MDBNavbar, MDBNavbarBrand } from 'mdbreact';
+import { MDBNavbar, MDBNavbarBrand,MDBNavbarNav,MDBNavItem } from 'mdbreact';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 class NavbarPage extends Component {
@@ -23,6 +23,12 @@ class NavbarPage extends Component {
 							Rail Genie
 						</span>
 					</MDBNavbarBrand>
+					<MDBNavbarNav right>
+                  <MDBNavItem>
+                    <div id="google_translate_element"></div>
+                  </MDBNavItem>
+                </MDBNavbarNav>
+
 				</MDBNavbar>
 			</Router>
 		);
