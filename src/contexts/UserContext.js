@@ -1,6 +1,11 @@
-import React from 'react';
+import React from "react";
 
 export default React.createContext({
-	language: 'en',
-	changeLanguage: (language) => {},
+  language: null,
+  changeLanguage: (language) => {},
+  token: null,
+  userId: null,
+  userEmail: null,
+  login: (token, userId, email) => {},
+  logout: () => {},
 });
