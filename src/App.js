@@ -5,8 +5,8 @@ import './App.css';
 import UserForm from './Components//UserForm.js';
 import Navbar from './Components/Navbar.js';
 import Logger from './Components/Logger.js';
-import Enquiry from './Components/Enquiry.js';
 import UserContext from './contexts/UserContext.js';
+import EnquirySpeech from './Components/EnquirySpeech.js';
 
 class App extends React.Component {
 	static contextType = UserContext;
@@ -70,8 +70,8 @@ class App extends React.Component {
 							<Route path='/logger' exact>
 								<Logger />
 							</Route>
-							<Route path='/enquiry' exact>
-								<Enquiry />
+							<Route path='/enquiry'>
+								<EnquirySpeech />
 							</Route>
 						</Switch>
 					</Router>
