@@ -1,30 +1,12 @@
 import React, { Component } from 'react';
-import { MDBNavbar, MDBNavbarBrand, MDBNavbarNav, MDBNavItem } from 'mdbreact';
+import { MDBNavbar, MDBNavbarBrand } from 'mdbreact';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { Form, Button, Grid, Popup, Modal, Dropdown, Image, Radio } from 'semantic-ui-react';
+import { Button, Modal, Dropdown } from 'semantic-ui-react';
 import Avatar from '@material-ui/core/Avatar';
 import styled from 'styled-components';
 import Login from './Login';
 import Signup from './Signup';
 import Cookie from 'js-cookie';
-
-const languages = [
-	{
-		key: 'en',
-		text: 'English',
-		value: 'en',
-	},
-	{
-		key: 'hi-In',
-		text: 'हिन्दी',
-		value: 'hi-In',
-	},
-	{
-		key: 'ml',
-		text: 'മലയാളം',
-		value: 'ml',
-	},
-];
 
 class NavbarPage extends Component {
 	state = {

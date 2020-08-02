@@ -1,9 +1,9 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Icon } from 'react-icons-kit';
 import { question } from 'react-icons-kit/icomoon/question';
 import { Button, Modal, Grid, Image } from 'semantic-ui-react';
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'firebase/firestore';
 import styled from 'styled-components';
 
@@ -20,6 +20,8 @@ const EnquirySpeech = () => {
 	const { language } = userContext;
 
 	const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+	var synth = window.speechSynthesis;
+
 	var recognition = new SpeechRecognition();
 	recognition.lang = language;
 
@@ -50,6 +52,11 @@ const EnquirySpeech = () => {
 		console.log(entity);
 		stopListnening();
 		setIsOpen(false);
+		const text = 'I hope you are loving it';
+		var toSpeak = new SpeechSynthesisUtterance(text);
+		var voices = synth.getVoices();
+		toSpeak.voice = voices[0];
+		synth.speak(toSpeak);
 	};
 
 	recognition.onspeechend = () => {
@@ -78,7 +85,7 @@ const EnquirySpeech = () => {
 						<div>
 							The {intent} of {entity} is{' '}
 							{intent === 'running status' ? (
-								<span>runnign late by {Math.floor(Math.random() * 10)}</span>
+								<span>running late by {Math.floor(Math.random() * 10)}</span>
 							) : (
 								<span>is waitlisted by GN/WL {Math.floor(Math.random() * 10)}</span>
 							)}{' '}
