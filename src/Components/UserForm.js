@@ -174,9 +174,6 @@ class UserForm extends React.Component {
 							</span>
 						</Grid.Column>
 					</Grid.Row>
-					{/* <Grid.Row>
-						<Radio toggle onChange={this.searchAlternateTrains} />
-					</Grid.Row> */}
 					<Grid.Row>
 						<Grid.Column width={1} style={{ padding: '0px !important' }} />
 						<Grid.Column width={4}>
