@@ -68,6 +68,7 @@ class UserForm extends React.Component {
 			const body = { origin: origin, destination: destination, date: date };
 			try {
 				const trains = await API.post(`/alternate-trains/`, body);
+				console.log(trains.data);
 				this.setState({
 					alternateTrains: trains.data,
 					loading: false,

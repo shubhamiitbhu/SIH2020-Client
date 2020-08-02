@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import RasaEnquiryAPI from '../utils/RasaEnquiryAPI.js';
 import { Icon } from 'react-icons-kit';
 import { mic } from 'react-icons-kit/icomoon/mic';
 import axios from 'axios';
@@ -26,10 +25,10 @@ const Enquiry = (props) => {
 		var last = event.results.length - 1;
 		var transcript = event.results[last][0].transcript;
 
-		const body = { text: 'I want to know running status of 15159' };
-		const entityExtraction = (await RasaEnquiryAPI.post('/', body)).data[0].value;
+		const body = { text: transcript };
+
 		const enquiryComponentasHTML = await axios.get(
-			`https://erail.in/train-running-status/${entityExtraction}?date=29-Jul-2020&from=STW`,
+			`https://erail.in/train-running-status/15159?date=29-Jul-2020&from=STW`,
 		);
 		setEnquiryComponent(enquiryComponentasHTML);
 		const today = new Date();
