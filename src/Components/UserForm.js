@@ -439,23 +439,19 @@ class UserForm extends React.Component {
 					</Grid.Row>
 				</StyledGrid>
 				<br />
-				<Grid centered padded>
+				<Grid centered padded stackable>
 					<Grid.Row>
-						<Grid.Column width={6}>
-							<Dropdown placeholder='English' options={languages} onChange={this.changeLanguage} />
+						<Grid.Column width={4}>
+							<div style={{fontSize:1.5+'rem'}}>Change Language:</div>
+							<Dropdown placeholder='English' options={languages} onChange={this.changeLanguage} 
+							style={{fontSize:1.5+'rem'}}
+							/>
 						</Grid.Column>
-						<Grid.Column width={6}>
-							<Button onClick={this.sortbydistance}>Sort by distance</Button>
-							<Button onClick={this.sortbytime}>Sort by time</Button>
-							<Button onClick={this.filterbytime1}>Filter 00:00 to 06:00</Button>
-							<Button onClick={this.filterbytime2}>Filter 06:00 to 12:00</Button>
-							<Button onClick={this.filterbytime3}>Filter 12:00 to 18:00</Button>
-							<Button onClick={this.filterbytime4}>Filter 18:00 to 00:00</Button>
-							<Button onClick={this.showAll}>showAll</Button>
-							{<Radio toggle onChange={this.searchAlternateTrains} />}
+						<Grid.Column width={8}>
+							<div style={{fontSize:1.5+'rem'}}>Route Options:</div>
 							<Form style={{ display: 'flex', flexWrap: 'wrap' }}>
-								Route Options:
-								<Form.Field>
+								
+								<Form.Field style={{paddingRight:1.2+'rem'}}>
 									<Radio
 										label='Direct'
 										name='radioGroup'
@@ -483,6 +479,17 @@ class UserForm extends React.Component {
 									/>
 								</Form.Field>
 							</Form>
+						</Grid.Column>
+					</Grid.Row>
+					<Grid.Row>
+						<Grid.Column width={12}>
+						<Button onClick={this.sortbydistance}>Sort by distance</Button>
+							<Button onClick={this.sortbytime}>Sort by time</Button>
+							<Button onClick={this.filterbytime1}>Filter 00:00 to 06:00</Button>
+							<Button onClick={this.filterbytime2}>Filter 06:00 to 12:00</Button>
+							<Button onClick={this.filterbytime3}>Filter 12:00 to 18:00</Button>
+							<Button onClick={this.filterbytime4}>Filter 18:00 to 00:00</Button>
+							<Button onClick={this.showAll}>Show All</Button>
 						</Grid.Column>
 					</Grid.Row>
 				</Grid>
