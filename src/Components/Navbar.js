@@ -25,7 +25,11 @@ class NavbarPage extends Component {
 	render() {
 		return (
 			<Router>
-				<Menu secondary>
+				<div id='google_translate_element' 
+					style={{backgroundColor:'#2196f3'}}
+				/>
+				<Menu secondary
+					style={{backgroundColor:'#2196f3',margin:0}}>
 					<img
 						alt='no-alt'
 						onClick={this.redirecttohome}
@@ -33,8 +37,8 @@ class NavbarPage extends Component {
 						src='./magic.png'
 						style={{ width: 2.75 + 'rem' }}
 					/>
-					Rail Genie
-					<div id='google_translate_element' />
+					<span style={{fontSize:2+'rem',color:'white'}}>Rail Genie</span>
+					
 					<StyledContainer>
 						{(() => {
 							if (this.state.token) {
