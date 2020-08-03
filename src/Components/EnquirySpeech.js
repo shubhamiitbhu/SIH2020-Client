@@ -40,19 +40,26 @@ const EnquirySpeech = () => {
 		var transcript = event.results[last][0].transcript;
 
 		const body = { text: transcript, language: language };
-
+		var intent1=null;
+		var entity1=null;
 		try {
 			const entityExtraction = await EnquiryAPI.post('/', body);
-
+			intent1=entityExtraction.data.intent.name;
+			entity1=entityExtraction.data.entity[0].value;
 			setEntity(entityExtraction.data.entity[0].value);
 			setIntent(entityExtraction.data.intent.name);
+			
 		} catch (error) {
 			console.log(error);
 		}
-		console.log(entity);
 		stopListnening();
 		setIsOpen(false);
-		const text = 'I hope you are loving it';
+		// const text = 'I hope you are loving it';
+		intent1 = intent1 === 'running status' ? intent1 : 'Passenger Name Record';
+		
+		var text1 = 'The'+intent1+'of'+entity1+'is';
+		var text2 =  intent1 === 'running status' ? 'running late by 10 minutes' : 'waitlisted by GN/WL 4';
+		const text = text1+text2;
 		var toSpeak = new SpeechSynthesisUtterance(text);
 		var voices = synth.getVoices();
 		toSpeak.voice = voices[0];
@@ -94,9 +101,9 @@ const EnquirySpeech = () => {
 							}}>
 								The {intent} of {entity} is{' '}
 								{intent === 'running status' ? (
-									<span>running late by {Math.floor(Math.random() * 10)}</span>
+									<span>running late by 10 minutes</span>
 								) : (
-									<span> waitlisted by GN/WL {Math.floor(Math.random() * 10)}</span>
+									<span> waitlisted by GN/WL 4</span>
 								)}{' '}
 							</div>
 						) : null}
