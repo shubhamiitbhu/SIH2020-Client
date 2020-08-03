@@ -1,29 +1,11 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { Form, Button, Grid, Popup, Modal, Dropdown, Image, Radio,Menu } from 'semantic-ui-react';
+import { Form, Button, Grid, Popup, Modal, Dropdown, Image, Radio, Menu } from 'semantic-ui-react';
 import Avatar from '@material-ui/core/Avatar';
 import styled from 'styled-components';
 import Login from './Login';
 import Signup from './Signup';
 import Cookie from 'js-cookie';
-
-const languages = [
-	{
-		key: 'en',
-		text: 'English',
-		value: 'en',
-	},
-	{
-		key: 'hi-In',
-		text: 'हिन्दी',
-		value: 'hi-In',
-	},
-	{
-		key: 'ml',
-		text: 'മലയാളം',
-		value: 'ml',
-	},
-];
 
 class NavbarPage extends Component {
 	state = {
@@ -43,14 +25,16 @@ class NavbarPage extends Component {
 	render() {
 		return (
 			<Router>
-			<Menu secondary>
-
-						<img alt='no-alt' onClick={this.redirecttohome} href='/'  src='./magic.png' style={{ width: 2.75 + 'rem' }} />
-
-							Rail Genie
-
-	         <div id="google_translate_element"></div>
-
+				<Menu secondary>
+					<img
+						alt='no-alt'
+						onClick={this.redirecttohome}
+						href='/'
+						src='./magic.png'
+						style={{ width: 2.75 + 'rem' }}
+					/>
+					Rail Genie
+					<div id='google_translate_element' />
 					<StyledContainer>
 						{(() => {
 							if (this.state.token) {
@@ -106,7 +90,6 @@ class NavbarPage extends Component {
 							}
 						})()}
 					</StyledContainer>
-
 				</Menu>
 			</Router>
 		);

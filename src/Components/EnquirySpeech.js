@@ -1,9 +1,9 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Icon } from 'react-icons-kit';
-import { question } from 'react-icons-kit/icomoon/question';
+import { mic } from 'react-icons-kit/icomoon/mic';
 import { Button, Modal, Grid, Image } from 'semantic-ui-react';
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'firebase/firestore';
 import styled from 'styled-components';
 
@@ -20,6 +20,8 @@ const EnquirySpeech = () => {
 	const { language } = userContext;
 
 	const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+	var synth = window.speechSynthesis;
+
 	var recognition = new SpeechRecognition();
 	recognition.lang = language;
 
@@ -38,79 +40,100 @@ const EnquirySpeech = () => {
 		var transcript = event.results[last][0].transcript;
 
 		const body = { text: transcript, language: language };
-
+		var intent1=null;
+		var entity1=null;
 		try {
 			const entityExtraction = await EnquiryAPI.post('/', body);
-
+			intent1=entityExtraction.data.intent.name;
+			entity1=entityExtraction.data.entity[0].value;
 			setEntity(entityExtraction.data.entity[0].value);
 			setIntent(entityExtraction.data.intent.name);
+			
 		} catch (error) {
 			console.log(error);
 		}
-		console.log(entity);
 		stopListnening();
 		setIsOpen(false);
+		// const text = 'I hope you are loving it';
+		intent1 = intent1 === 'running status' ? intent1 : 'Passenger Name Record';
+		
+		var text1 = 'The'+intent1+'of'+entity1+'is';
+		var text2 =  intent1 === 'running status' ? 'running late by 10 minutes' : 'waitlisted by GN/WL 4';
+		const text = text1+text2;
+		var toSpeak = new SpeechSynthesisUtterance(text);
+		var voices = synth.getVoices();
+		toSpeak.voice = voices[0];
+		synth.speak(toSpeak);
 	};
 
 	recognition.onspeechend = () => {
 		recognition.stop();
 	};
-	console.log(intent);
+
 	return (
 		<React.Fragment>
 			<ToastContainer />
 			<StyledButton
 				circular
-				style={{ padding: 0.5 + 'rem', background: '#fff' }}
+				style={{ padding: 0.5 + 'rem', 
+						background: '#fff',
+						display: 'block',
+						margin: 'auto',
+						fontSize: 2+'rem',
+					}}
 				type='submit'
 				onClick={() => {
 					listenSpeech();
 				}}
 			>
 				{' '}
-				<Icon size={40} icon={question} />
+				<Icon size={80} icon={mic} />
+				Ask me live running status or PNR status
 			</StyledButton>
+			<Grid padded centered>
+				<Grid.Row>
+					
+					<Grid.Column width={8}>
+						{entity !== null && intent !== null ? (
+							<div style={{
+								textAlign:'center',
+								fontSize:2+'rem'
+							}}>
+								The {intent} of {entity} is{' '}
+								{intent === 'running status' ? (
+									<span>running late by 10 minutes</span>
+								) : (
+									<span> waitlisted by GN/WL 4</span>
+								)}{' '}
+							</div>
+						) : null}
+						<StyledModal
+							size='mini'
+							closeIcon
+							open={isOpen}
+							onClose={() => {
+								setIsOpen(false);
+							}}
+							onOpen={() => setIsOpen(true)}
+						>
+							{(() => {
+								return (
+									<React.Fragment>
+										{entity !== null ? (
+											<React.Fragment>
+												<Modal.Header>Our bot, is Listening to your queries</Modal.Header>
+											</React.Fragment>
+										) : (
+											<StyledImage wrapped size='large' src='./microphone.gif' />
+										)}
+									</React.Fragment>
+								);
+							})()}
+						</StyledModal>
+					</Grid.Column>
 
-			<Grid.Row>
-				<Grid.Column width={5} />
-				<Grid.Column width={6}>
-					{entity !== null && intent !== null ? (
-						<div>
-							The {intent} of {entity} is{' '}
-							{intent === 'running status' ? (
-								<span>runnign late by {Math.floor(Math.random() * 10)}</span>
-							) : (
-								<span>is waitlisted by GN/WL {Math.floor(Math.random() * 10)}</span>
-							)}{' '}
-						</div>
-					) : null}
-					<StyledModal
-						size='mini'
-						closeIcon
-						open={isOpen}
-						onClose={() => {
-							setIsOpen(false);
-						}}
-						onOpen={() => setIsOpen(true)}
-					>
-						{(() => {
-							return (
-								<React.Fragment>
-									{entity !== null ? (
-										<React.Fragment>
-											<Modal.Header>Our bot, is Listening to your queries</Modal.Header>
-										</React.Fragment>
-									) : (
-										<StyledImage wrapped size='large' src='./microphone.gif' />
-									)}
-								</React.Fragment>
-							);
-						})()}
-					</StyledModal>
-				</Grid.Column>
-
-				<Grid.Column width={5} />
-			</Grid.Row>
+				</Grid.Row>
+			</Grid>
 		</React.Fragment>
 	);
 };
@@ -127,7 +150,5 @@ const StyledImage = styled(Image)`
 `;
 
 const StyledButton = styled(Button)`
-  position: absolute !important;
-  bottom: 2% !important;
-  right: 2% !important;
+	
 `;

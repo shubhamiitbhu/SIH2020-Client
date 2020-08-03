@@ -13,9 +13,9 @@ import API from '../utils/API';
 import JourneyCard from './JourneyCard.js';
 import AlternateTrains from './AlternateTrains.js';
 import Speech from './Speech.js';
-import EnquirySpeech from './EnquirySpeech.js';
 import WithContexts from './WithContexts.js';
 import Features from './Features.js';
+import NearbyTrains from './NearbyTrains.js';
 
 const languages = [
 	{
@@ -41,11 +41,13 @@ class UserForm extends React.Component {
 		destination: '',
 		date: '',
 		trains: null,
-		originaltrains:null,
+		originaltrains: null,
 		alternateTrains: null,
+		nearbyTrains: false,
 		loading: false,
 		record: false,
-		recognizer:false,
+		recognizer: false,
+		radioValue: 'direct',
 	};
 
 	componentDidMount() {
@@ -59,31 +61,26 @@ class UserForm extends React.Component {
 		this.setState({
 			date: senderDate,
 		});
-		if(SpeechRecognition)
-		this.setState({
-			recognizer:true,
-		});
+		if (SpeechRecognition)
+			this.setState({
+				recognizer: true,
+			});
 	}
 
-	searchAlternateTrains = async (event) => {
-		event.preventDefault();
-		if (this.state.alternateTrains !== null) {
-			this.setState({ alternateTrains: null });
-		} else {
-			this.setState({ loading: true });
-			const { origin, destination, date } = this.state;
-			const body = { origin: origin, destination: destination, date: date };
-			try {
-				const trains = await API.post(`/alternate-trains/`, body);
-				console.log(trains.data);
-				this.setState({
-					alternateTrains: trains.data,
-					loading: false,
-				});
-			} catch (error) {
-				toast.error('Invalid Station Details');
-				this.setState({ loading: false });
-			}
+	searchAlternateTrains = async () => {
+		this.setState({ loading: true });
+		const { origin, destination, date } = this.state;
+		const body = { origin: origin, destination: destination, date: date };
+		try {
+			const trains = await API.post(`/alternate-trains/`, body);
+
+			this.setState({
+				alternateTrains: trains.data,
+				loading: false,
+			});
+		} catch (error) {
+			toast.error('Invalid Station Details');
+			this.setState({ loading: false });
 		}
 	};
 
@@ -96,7 +93,7 @@ class UserForm extends React.Component {
 			const trains = await API.post(`/direct-trains/`, body);
 			this.setState({
 				trains: trains.data,
-				originaltrains:trains.data,
+				originaltrains: trains.data,
 				loading: false,
 			});
 		} catch (error) {
@@ -120,13 +117,13 @@ class UserForm extends React.Component {
 				loading: true,
 			});
 		}
-		console.log(origin);
+
 		const body = { origin: origin, destination: destination, date: date };
 		try {
 			const trains = await API.post(`/direct-trains/`, body);
 			this.setState({
 				trains: trains.data,
-				originaltrains:trains.data,
+				originaltrains: trains.data,
 				loading: false,
 			});
 		} catch (error) {
@@ -141,6 +138,8 @@ class UserForm extends React.Component {
 			destination: event.target.value.toUpperCase(),
 			trains: null,
 			alternateTrains: null,
+			nearbyTrains: false,
+			radioValue: 'direct',
 		});
 	};
 
@@ -150,6 +149,8 @@ class UserForm extends React.Component {
 			origin: event.target.value.toUpperCase(),
 			trains: null,
 			alternateTrains: null,
+			nearbyTrains: false,
+			radioValue: 'direct',
 		});
 	};
 
@@ -171,146 +172,139 @@ class UserForm extends React.Component {
 			date: senderDate,
 			calenderView: 'none',
 			trains: null,
+			nearbyTrains: false,
+			radioValue: 'direct',
 		});
 	};
- sortbydistance =()=>{
-	var trains= this.state.trains ;
-	if(!trains) return;
-	trains.sort(function(a, b) {
+	sortbydistance = () => {
+		var trains = this.state.trains;
+		if (!trains) return;
+		trains.sort(function(a, b) {
+			if (a.totalDistance < b.totalDistance) {
+				return -1;
+			}
+			if (a.totalDistance > b.totalDistance) {
+				return 1;
+			}
+			return 0;
+		});
+		this.setState({ trains: trains });
+	};
+	sortbytime = () => {
+		var trains = this.state.trains;
+		if (!trains) return;
+		trains.sort(function(a, b) {
+			var durationA = a.duration;
+			var durationB = b.duration;
+			let timearrayA = durationA.split(':');
+			let timearrayB = durationB.split(':');
+			var final_timeA = 0,
+				final_timeB = 0;
+			for (var i = 0; i < timearrayA.length; i++) final_timeA = final_timeA * 60 + Number.parseInt(timearrayA[i]);
+			for (var i = 0; i < 3 - timearrayA.length; i++) final_timeA *= 60;
 
-    if (a.totalDistance < b.totalDistance) {return -1;}
-     if (a.totalDistance > b.totalDistance) {return 1;}
-    return 0;
-	                   });
-	this.setState({trains:trains});
+			for (var i = 0; i < timearrayB.length; i++) final_timeB = final_timeB * 60 + Number.parseInt(timearrayB[i]);
+			for (var i = 0; i < 3 - timearrayB.length; i++) final_timeB *= 60;
 
- }
- sortbytime =()=>{
-	var trains= this.state.trains;
-if(!trains) return;
-trains.sort(function(a, b) {
-var durationA = a.duration;
-var durationB = b.duration;
-let timearrayA=durationA.split(":");let timearrayB=durationB.split(":");
-var final_timeA=0,final_timeB=0;
-for(var i=0;i<timearrayA.length;i++)
-final_timeA=(final_timeA*60)+Number.parseInt(timearrayA[i]);
-for(var i=0;i<(3-timearrayA.length);i++)
-final_timeA*=60;
+			if (final_timeA < final_timeB) {
+				return -1;
+			}
+			if (final_timeA > final_timeB) {
+				return 1;
+			}
 
-for(var i=0;i<timearrayB.length;i++)
-final_timeB=(final_timeB*60)+Number.parseInt(timearrayB[i]);
-for(var i=0;i<(3-timearrayB.length);i++)
-final_timeB*=60;
+			return 0;
+		});
+		this.setState({ trains: trains });
+	};
 
+	filterbytime1 = () => {
+		var trains = this.state.originaltrains;
+		//console.log(trains);
+		if (!trains) return;
+		var filteredTrains = trains.filter(function(a) {
+			var duration = a.originDeparture;
+			let timearray = duration.split(':');
+			var final_time = 0;
+			for (var i = 0; i < timearray.length; i++) final_time = final_time * 60 + Number.parseInt(timearray[i]);
+			for (var i = 0; i < 3 - timearray.length; i++) final_time *= 60;
+			//console.log(final_time);
+			if (final_time >= 0 && final_time <= 21600) return 1;
+			else return 0;
+		});
+		this.setState({ trains: filteredTrains });
+	};
+	filterbytime2 = () => {
+		var trains = this.state.originaltrains;
+		//console.log(this.state.originaltrains);
+		//console.log(trains);
+		if (!trains) return;
+		var filteredTrains = trains.filter(function(a) {
+			var duration = a.originDeparture;
+			let timearray = duration.split(':');
+			var final_time = 0;
+			for (var i = 0; i < timearray.length; i++) final_time = final_time * 60 + Number.parseInt(timearray[i]);
+			for (var i = 0; i < 3 - timearray.length; i++) final_time *= 60;
+			console.log(final_time);
+			if (final_time >= 21600 && final_time <= 43200) return 1;
+			else return 0;
+		});
+		this.setState({ trains: filteredTrains });
+	};
+	filterbytime3 = () => {
+		var trains = this.state.originaltrains;
+		//console.log(trains);
+		if (!trains) return;
+		var filteredTrains = trains.filter(function(a) {
+			var duration = a.originDeparture;
+			let timearray = duration.split(':');
+			var final_time = 0;
+			for (var i = 0; i < timearray.length; i++) final_time = final_time * 60 + Number.parseInt(timearray[i]);
+			for (var i = 0; i < 3 - timearray.length; i++) final_time *= 60;
+			console.log(final_time);
+			if (final_time >= 43200 && final_time <= 64800) return 1;
+			else return 0;
+		});
+		this.setState({ trains: filteredTrains });
+	};
+	filterbytime4 = () => {
+		var trains = this.state.originaltrains;
+		console.log(trains);
+		if (!trains) return;
+		var filteredTrains = trains.filter(function(a) {
+			var duration = a.originDeparture;
+			let timearray = duration.split(':');
+			var final_time = 0;
+			for (var i = 0; i < timearray.length; i++) final_time = final_time * 60 + Number.parseInt(timearray[i]);
+			for (var i = 0; i < 3 - timearray.length; i++) final_time *= 60;
+			console.log(final_time);
+			if (final_time >= 64800 && final_time <= 86400) return 1;
+			else return 0;
+		});
+		this.setState({ trains: filteredTrains });
+	};
+	showAll = () => {
+		var trains = this.state.originaltrains;
 
-if (final_timeA < final_timeB) {return -1;}
-if (final_timeA > final_timeB) {return 1;}
+		this.setState({ trains: trains });
+	};
 
+	changeRadio = (event, { value }) => {
+		event.preventDefault();
+		this.setState({ radioValue: value });
 
-return 0;
-});
-	this.setState({trains:trains});
-
-
-
- }
-
-filterbytime1=()=>{
- var trains=this.state.originaltrains;
- //console.log(trains);
- if(!trains)return;
- var filteredTrains=trains.filter(function(a){
-	 var duration = a.originDeparture;
-	 let timearray=duration.split(":");
-	 var final_time=0;
-	 for(var i=0;i<timearray.length;i++)
-	 final_time=(final_time*60)+Number.parseInt(timearray[i]);
-	 for(var i=0;i<(3-timearray.length);i++)
-	 final_time*=60;
-	 //console.log(final_time);
-	 if(final_time>=0&&final_time<=21600)
-	 return 1;
-	 else
-	 return 0;
- });
- this.setState({trains:filteredTrains});
-
-}
-filterbytime2=()=>{
- var trains=this.state.originaltrains;
- //console.log(this.state.originaltrains);
- //console.log(trains);
- if(!trains)return;
- var filteredTrains=trains.filter(function(a){
-	 var duration = a.originDeparture;
-	 let timearray=duration.split(":");
-	 var final_time=0;
-	 for(var i=0;i<timearray.length;i++)
-	 final_time=(final_time*60)+Number.parseInt(timearray[i]);
-	 for(var i=0;i<(3-timearray.length);i++)
-	 final_time*=60;
-	 console.log(final_time);
-	 if(final_time>=21600&&final_time<=43200)
-	 return 1;
-	 else
-	 return 0;
- });
- this.setState({trains:filteredTrains});
-
-}
-filterbytime3=()=>{
- var trains=this.state.originaltrains;
- //console.log(trains);
- if(!trains)return;
- var filteredTrains=trains.filter(function(a){
-	 var duration = a.originDeparture;
-	 let timearray=duration.split(":");
-	 var final_time=0;
-	 for(var i=0;i<timearray.length;i++)
-	 final_time=(final_time*60)+Number.parseInt(timearray[i]);
-	 for(var i=0;i<(3-timearray.length);i++)
-	 final_time*=60;
-	 console.log(final_time);
-	 if(final_time>=43200&&final_time<=64800)
-	 return 1;
-	 else
-	 return 0;
- });
- this.setState({trains:filteredTrains});
-
-}
-filterbytime4=()=>{
- var trains=this.state.originaltrains;
- console.log(trains);
- if(!trains)return;
- var filteredTrains=trains.filter(function(a){
-	 var duration = a.originDeparture;
-	 let timearray=duration.split(":");
-	 var final_time=0;
-	 for(var i=0;i<timearray.length;i++)
-	 final_time=(final_time*60)+Number.parseInt(timearray[i]);
-	 for(var i=0;i<(3-timearray.length);i++)
-	 final_time*=60;
-	 console.log(final_time);
-	 if(final_time>=64800&&final_time<=86400)
-	 return 1;
-	 else
-	 return 0;
- });
- this.setState({trains:filteredTrains});
-
-}
-showAll=()=>{
- var trains=this.state.originaltrains;
-
- this.setState({trains:trains});
-
-}
-
+		if (value === 'alternate') {
+			this.searchAlternateTrains();
+		}
+		if (value !== 'nearby') {
+			this.setState({ nearbyTrains: false });
+		} else if (value === 'nearby') {
+			this.setState({ nearbyTrains: true });
+		}
+	};
 
 	render() {
-		const { trains, alternateTrains, origin, date, destination, loading } = this.state;
+		const { trains, alternateTrains, origin, date, destination, loading, radioValue, nearbyTrains } = this.state;
 		return (
 			<React.Fragment>
 				<StyledGrid className='middle aligned stackable padded' style={{ paddingBottom: 3 + 'rem' }}>
@@ -376,7 +370,9 @@ showAll=()=>{
 											<Form.Input
 												value={date}
 												placeholder='Pick a Date from Calender'
-											  onChange={()=>{toast.warn('Use Calender to pic date!')}}
+												onChange={() => {
+													toast.warn('Use Calender to pic date!');
+												}}
 											/>
 										</Form.Field>
 									</StyledForm>
@@ -428,11 +424,15 @@ showAll=()=>{
 								</Grid.Column>
 								<Grid.Column width={3} />
 								<Grid.Column width={2}>
-								{this.state.recognizer?<Speech
-									onSpeechEnd={(origin, destination, date) => {
-										this.speechToTextResult(origin, destination, date);
-									}}
-								/>:<div></div>}
+									{this.state.recognizer ? (
+										<Speech
+											onSpeechEnd={(origin, destination, date) => {
+												this.speechToTextResult(origin, destination, date);
+											}}
+										/>
+									) : (
+										<div />
+									)}
 								</Grid.Column>
 							</Grid>
 						</Grid.Column>
@@ -445,34 +445,41 @@ showAll=()=>{
 							<Dropdown placeholder='English' options={languages} onChange={this.changeLanguage} />
 						</Grid.Column>
 						<Grid.Column width={6}>
-						 <Button onClick={this.sortbydistance}>Sort by distance</Button>
-						 <Button onClick={this.sortbytime}>Sort by time</Button>
-						 <Button onClick={this.filterbytime1}>Filter 00:00 to 06:00</Button>
-						 <Button onClick={this.filterbytime2}>Filter 06:00 to 12:00</Button>
-						 <Button onClick={this.filterbytime3}>Filter 12:00 to 18:00</Button>
-						 <Button onClick={this.filterbytime4}>Filter 18:00 to 00:00</Button>
-            <Button onClick={this.showAll}>showAll</Button>
-							{ <Radio toggle onChange={this.searchAlternateTrains} /> }
+							<Button onClick={this.sortbydistance}>Sort by distance</Button>
+							<Button onClick={this.sortbytime}>Sort by time</Button>
+							<Button onClick={this.filterbytime1}>Filter 00:00 to 06:00</Button>
+							<Button onClick={this.filterbytime2}>Filter 06:00 to 12:00</Button>
+							<Button onClick={this.filterbytime3}>Filter 12:00 to 18:00</Button>
+							<Button onClick={this.filterbytime4}>Filter 18:00 to 00:00</Button>
+							<Button onClick={this.showAll}>showAll</Button>
+							{<Radio toggle onChange={this.searchAlternateTrains} />}
 							<Form style={{ display: 'flex', flexWrap: 'wrap' }}>
-								<Form.Field>
-									Selected value: <b>{this.state.value}</b>
-								</Form.Field>
+								Route Options:
 								<Form.Field>
 									<Radio
-										label='Choose this'
+										label='Direct'
 										name='radioGroup'
-										value='this'
-										checked={this.state.value === 'this'}
-										onChange={this.handleChange}
+										value='direct'
+										checked={radioValue === 'direct'}
+										onChange={this.changeRadio}
 									/>
-								</Form.Field>
+								</Form.Field>{' '}
 								<Form.Field>
 									<Radio
-										label='Or that'
+										label='Alternate'
 										name='radioGroup'
-										value='that'
-										checked={this.state.value === 'that'}
-										onChange={this.handleChange}
+										value='alternate'
+										checked={radioValue === 'alternate'}
+										onChange={this.changeRadio}
+									/>
+								</Form.Field>{' '}
+								<Form.Field>
+									<Radio
+										label='from Nearby stations'
+										name='radioGroup'
+										value='nearby'
+										checked={radioValue === 'nearby'}
+										onChange={this.changeRadio}
 									/>
 								</Form.Field>
 							</Form>
@@ -485,7 +492,7 @@ showAll=()=>{
 					<Grid.Row>
 						<Grid.Column computer={10} tablet={12}>
 							<span>
-								{trains !== null ? (
+								{trains !== null && radioValue === 'direct' ? (
 									trains.map((train, index) => (
 										<JourneyCard train={train} index={index} key={index} />
 									))
@@ -497,13 +504,19 @@ showAll=()=>{
 											<Grid.Column width={3} />
 											<Grid.Column width={12} />
 										</Grid.Row>
-										<h2>No direct trains available</h2>
+										<h2>No direct trains available, You can search for alternate trains</h2>
 										<Icon size={128} icon={sad} />
 										<br />
 									</div>
 								) : null}
-								{alternateTrains !== null && alternateTrains.length !== 0 ? (
+
+								{alternateTrains !== null &&
+								alternateTrains.length !== 0 &&
+								radioValue === 'alternate' ? (
 									<AlternateTrains trains={alternateTrains} />
+								) : null}
+								{radioValue === 'nearby' && nearbyTrains === true ? (
+									<NearbyTrains origin={origin} destination={destination} date={date} />
 								) : null}
 							</span>
 						</Grid.Column>
