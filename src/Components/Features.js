@@ -8,43 +8,29 @@ class Features extends React.Component {
 				<Grid.Row>
 					<Grid.Column width={4} />
 					<Grid.Column width={2}>
-						<Icon name='comments' size='huge' />
-						<br />
-						Smart Enquiry
+						<a href='/enquiry'>
+							<Icon name='comments' size='huge' />
+							<br />
+							Smart Enquiry
+						</a>
 					</Grid.Column>
-					<Grid.Column width={1} />
-					<Grid.Column width={2}>
-						<Icon name='newspaper outline' size='huge' />
-						<br />
-						Smart Feedback
-					</Grid.Column>
-					<Grid.Column width={1} />
-					<Grid.Column width={2}>
-						<Icon name='chart line' size='huge' />
-						<br />
-						Smart Analytics
-					</Grid.Column>
-					<Grid.Column width={4} />
-				</Grid.Row>
 
-				<Grid.Row>
-					<Grid.Column width={4} />
-					<Grid.Column width={2}>
-						<Icon name='qrcode' size='huge' />
-						<br />
-						Smart Complaint
-					</Grid.Column>
 					<Grid.Column width={1} />
 					<Grid.Column width={2}>
-						<Icon name='detective' size='huge' />
-						<br />
-						Smart Detector
+						<a href='/uts'>
+							<Icon name='newspaper outline' size='huge' />
+							<br />
+							Smart UTS Booking
+						</a>
 					</Grid.Column>
 					<Grid.Column width={1} />
+
 					<Grid.Column width={2}>
-						<Icon name='exchange' size='huge' />
-						<br />
-						Smart Booking
+						<a href='/logger'>
+							<Icon name='chart line' size='huge' />
+							<br />
+							Smart Logger for Developers
+						</a>
 					</Grid.Column>
 					<Grid.Column width={4} />
 				</Grid.Row>
