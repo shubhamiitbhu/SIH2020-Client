@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Icon } from 'react-icons-kit';
-import { question } from 'react-icons-kit/icomoon/question';
+import { mic } from 'react-icons-kit/icomoon/mic';
 import { Button, Modal, Grid, Image } from 'semantic-ui-react';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
@@ -68,56 +68,65 @@ const EnquirySpeech = () => {
 			<ToastContainer />
 			<StyledButton
 				circular
-				style={{ padding: 0.5 + 'rem', background: '#fff' }}
+				style={{ padding: 0.5 + 'rem', 
+						background: '#fff',
+						display: 'block',
+						margin: 'auto',
+						fontSize: 2+'rem',
+					}}
 				type='submit'
 				onClick={() => {
 					listenSpeech();
 				}}
 			>
 				{' '}
-				<Icon size={40} icon={question} />
+				<Icon size={80} icon={mic} />
+				Ask me live running status or PNR status
 			</StyledButton>
+			<Grid padded centered>
+				<Grid.Row>
+					
+					<Grid.Column width={8}>
+						{entity !== null && intent !== null ? (
+							<div style={{
+								textAlign:'center',
+								fontSize:2+'rem'
+							}}>
+								The {intent} of {entity} is{' '}
+								{intent === 'running status' ? (
+									<span>running late by {Math.floor(Math.random() * 10)}</span>
+								) : (
+									<span> waitlisted by GN/WL {Math.floor(Math.random() * 10)}</span>
+								)}{' '}
+							</div>
+						) : null}
+						<StyledModal
+							size='mini'
+							closeIcon
+							open={isOpen}
+							onClose={() => {
+								setIsOpen(false);
+							}}
+							onOpen={() => setIsOpen(true)}
+						>
+							{(() => {
+								return (
+									<React.Fragment>
+										{entity !== null ? (
+											<React.Fragment>
+												<Modal.Header>Our bot, is Listening to your queries</Modal.Header>
+											</React.Fragment>
+										) : (
+											<StyledImage wrapped size='large' src='./microphone.gif' />
+										)}
+									</React.Fragment>
+								);
+							})()}
+						</StyledModal>
+					</Grid.Column>
 
-			<Grid.Row>
-				<Grid.Column width={5} />
-				<Grid.Column width={6}>
-					{entity !== null && intent !== null ? (
-						<div>
-							The {intent} of {entity} is{' '}
-							{intent === 'running status' ? (
-								<span>running late by {Math.floor(Math.random() * 10)}</span>
-							) : (
-								<span>is waitlisted by GN/WL {Math.floor(Math.random() * 10)}</span>
-							)}{' '}
-						</div>
-					) : null}
-					<StyledModal
-						size='mini'
-						closeIcon
-						open={isOpen}
-						onClose={() => {
-							setIsOpen(false);
-						}}
-						onOpen={() => setIsOpen(true)}
-					>
-						{(() => {
-							return (
-								<React.Fragment>
-									{entity !== null ? (
-										<React.Fragment>
-											<Modal.Header>Our bot, is Listening to your queries</Modal.Header>
-										</React.Fragment>
-									) : (
-										<StyledImage wrapped size='large' src='./microphone.gif' />
-									)}
-								</React.Fragment>
-							);
-						})()}
-					</StyledModal>
-				</Grid.Column>
-
-				<Grid.Column width={5} />
-			</Grid.Row>
+				</Grid.Row>
+			</Grid>
 		</React.Fragment>
 	);
 };
@@ -134,7 +143,5 @@ const StyledImage = styled(Image)`
 `;
 
 const StyledButton = styled(Button)`
-  position: absolute !important;
-  bottom: 2% !important;
-  right: 2% !important;
+	
 `;
