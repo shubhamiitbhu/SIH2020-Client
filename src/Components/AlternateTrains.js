@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AlternateTrainsCards from './AlternateTrainsCard';
-
+import { Divider,Button } from 'semantic-ui-react';
 const AlternateTrains = (props) => {
 	const [ journeys, setJourneys ] = useState(null);
 
@@ -65,10 +65,22 @@ const AlternateTrains = (props) => {
 		return fixtures;
 	};
 
+
 	useEffect(
 		() => {
 			const { trains } = props;
 			const fixtures = setJourneyFixtures(trains);
+			fixtures.sort(function(a, b) {
+ 		 var gapA = a.timeGap;
+ 		 var gapB = b.timeGap;
+ 		 let fin_gapA=Number.parseInt(gapA.hour)*60+Number.parseInt(gapA.minute);
+ 		 let fin_gapB=Number.parseInt(gapB.hour)*60+Number.parseInt(gapB.minute);
+ 		 if (fin_gapA < fin_gapB) {return -1;}
+ 		 if (fin_gapA > fin_gapB) {return 1;}
+
+
+ 		 return 0;
+ 		 });
 			setJourneys(fixtures);
 		},
 		[ props ],
@@ -76,6 +88,7 @@ const AlternateTrains = (props) => {
 
 	return (
 		<div>
+		 
 			{journeys !== null && journeys.length !== 0 ? (
 				journeys.map((journey, index) => <AlternateTrainsCards journey={journey} key={index} />)
 			) : null}

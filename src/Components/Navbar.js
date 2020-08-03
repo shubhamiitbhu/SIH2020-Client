@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { MDBNavbar, MDBNavbarBrand } from 'mdbreact';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { Button, Modal, Dropdown } from 'semantic-ui-react';
+import { Form, Button, Grid, Popup, Modal, Dropdown, Image, Radio, Menu } from 'semantic-ui-react';
 import Avatar from '@material-ui/core/Avatar';
 import styled from 'styled-components';
 import Login from './Login';
@@ -26,13 +25,20 @@ class NavbarPage extends Component {
 	render() {
 		return (
 			<Router>
-				<MDBNavbar expand='md' className='scrolling-navbar z-depth-0' color='blue'>
-					<MDBNavbarBrand className='p-0' onClick={this.redirecttohome} href='/'>
-						<img alt='no-alt' className='mr-2' src='./magic.png' style={{ width: 2.75 + 'rem' }} />
-						<span className='align-middle text-white' style={{ fontWeight: 600, fontSize: 1.75 + 'rem' }}>
-							Rail Genie
-						</span>
-					</MDBNavbarBrand>
+				<div id='google_translate_element' 
+					style={{backgroundColor:'#2196f3'}}
+				/>
+				<Menu secondary
+					style={{backgroundColor:'#2196f3',margin:0}}>
+					<img
+						alt='no-alt'
+						onClick={this.redirecttohome}
+						href='/'
+						src='./magic.png'
+						style={{ width: 2.75 + 'rem' }}
+					/>
+					<span style={{fontSize:2+'rem',color:'white'}}>Rail Genie</span>
+					
 					<StyledContainer>
 						{(() => {
 							if (this.state.token) {
@@ -88,7 +94,7 @@ class NavbarPage extends Component {
 							}
 						})()}
 					</StyledContainer>
-				</MDBNavbar>
+				</Menu>
 			</Router>
 		);
 	}

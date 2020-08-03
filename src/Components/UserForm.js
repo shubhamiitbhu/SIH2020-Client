@@ -34,17 +34,19 @@ const languages = [
 		value: 'ml',
 	},
 ];
-
+const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
 class UserForm extends React.Component {
 	state = {
 		origin: '',
 		destination: '',
 		date: '',
 		trains: null,
+		originaltrains: null,
 		alternateTrains: null,
 		nearbyTrains: false,
 		loading: false,
 		record: false,
+		recognizer: false,
 		radioValue: 'direct',
 	};
 
@@ -59,6 +61,10 @@ class UserForm extends React.Component {
 		this.setState({
 			date: senderDate,
 		});
+		if (SpeechRecognition)
+			this.setState({
+				recognizer: true,
+			});
 	}
 
 	searchAlternateTrains = async () => {
@@ -87,6 +93,7 @@ class UserForm extends React.Component {
 			const trains = await API.post(`/direct-trains/`, body);
 			this.setState({
 				trains: trains.data,
+				originaltrains: trains.data,
 				loading: false,
 			});
 		} catch (error) {
@@ -116,6 +123,7 @@ class UserForm extends React.Component {
 			const trains = await API.post(`/direct-trains/`, body);
 			this.setState({
 				trains: trains.data,
+				originaltrains: trains.data,
 				loading: false,
 			});
 		} catch (error) {
@@ -167,6 +175,118 @@ class UserForm extends React.Component {
 			nearbyTrains: false,
 			radioValue: 'direct',
 		});
+	};
+	sortbydistance = () => {
+		var trains = this.state.trains;
+		if (!trains) return;
+		trains.sort(function(a, b) {
+			if (a.totalDistance < b.totalDistance) {
+				return -1;
+			}
+			if (a.totalDistance > b.totalDistance) {
+				return 1;
+			}
+			return 0;
+		});
+		this.setState({ trains: trains });
+	};
+	sortbytime = () => {
+		var trains = this.state.trains;
+		if (!trains) return;
+		trains.sort(function(a, b) {
+			var durationA = a.duration;
+			var durationB = b.duration;
+			let timearrayA = durationA.split(':');
+			let timearrayB = durationB.split(':');
+			var final_timeA = 0,
+				final_timeB = 0;
+			for (var i = 0; i < timearrayA.length; i++) final_timeA = final_timeA * 60 + Number.parseInt(timearrayA[i]);
+			for (var i = 0; i < 3 - timearrayA.length; i++) final_timeA *= 60;
+
+			for (var i = 0; i < timearrayB.length; i++) final_timeB = final_timeB * 60 + Number.parseInt(timearrayB[i]);
+			for (var i = 0; i < 3 - timearrayB.length; i++) final_timeB *= 60;
+
+			if (final_timeA < final_timeB) {
+				return -1;
+			}
+			if (final_timeA > final_timeB) {
+				return 1;
+			}
+
+			return 0;
+		});
+		this.setState({ trains: trains });
+	};
+
+	filterbytime1 = () => {
+		var trains = this.state.originaltrains;
+		//console.log(trains);
+		if (!trains) return;
+		var filteredTrains = trains.filter(function(a) {
+			var duration = a.originDeparture;
+			let timearray = duration.split(':');
+			var final_time = 0;
+			for (var i = 0; i < timearray.length; i++) final_time = final_time * 60 + Number.parseInt(timearray[i]);
+			for (var i = 0; i < 3 - timearray.length; i++) final_time *= 60;
+			//console.log(final_time);
+			if (final_time >= 0 && final_time <= 21600) return 1;
+			else return 0;
+		});
+		this.setState({ trains: filteredTrains });
+	};
+	filterbytime2 = () => {
+		var trains = this.state.originaltrains;
+		//console.log(this.state.originaltrains);
+		//console.log(trains);
+		if (!trains) return;
+		var filteredTrains = trains.filter(function(a) {
+			var duration = a.originDeparture;
+			let timearray = duration.split(':');
+			var final_time = 0;
+			for (var i = 0; i < timearray.length; i++) final_time = final_time * 60 + Number.parseInt(timearray[i]);
+			for (var i = 0; i < 3 - timearray.length; i++) final_time *= 60;
+			console.log(final_time);
+			if (final_time >= 21600 && final_time <= 43200) return 1;
+			else return 0;
+		});
+		this.setState({ trains: filteredTrains });
+	};
+	filterbytime3 = () => {
+		var trains = this.state.originaltrains;
+		//console.log(trains);
+		if (!trains) return;
+		var filteredTrains = trains.filter(function(a) {
+			var duration = a.originDeparture;
+			let timearray = duration.split(':');
+			var final_time = 0;
+			for (var i = 0; i < timearray.length; i++) final_time = final_time * 60 + Number.parseInt(timearray[i]);
+			for (var i = 0; i < 3 - timearray.length; i++) final_time *= 60;
+			console.log(final_time);
+			if (final_time >= 43200 && final_time <= 64800) return 1;
+			else return 0;
+		});
+		this.setState({ trains: filteredTrains });
+	};
+	filterbytime4 = () => {
+		var trains = this.state.originaltrains;
+		console.log(trains);
+		if (!trains) return;
+		var filteredTrains = trains.filter(function(a) {
+			var duration = a.originDeparture;
+			let timearray = duration.split(':');
+			var final_time = 0;
+			for (var i = 0; i < timearray.length; i++) final_time = final_time * 60 + Number.parseInt(timearray[i]);
+			for (var i = 0; i < 3 - timearray.length; i++) final_time *= 60;
+			console.log(final_time);
+			if (final_time >= 64800 && final_time <= 86400) return 1;
+			else return 0;
+		});
+		this.setState({ trains: filteredTrains });
+	};
+	showAll = () => {
+		var trains = this.state.originaltrains;
+
+		this.setState({ trains: trains });
 	};
 
 	changeRadio = (event, { value }) => {
@@ -250,7 +370,9 @@ class UserForm extends React.Component {
 											<Form.Input
 												value={date}
 												placeholder='Pick a Date from Calender'
-												onChange={this.changeInDestinationForm}
+												onChange={() => {
+													toast.warn('Use Calender to pic date!');
+												}}
 											/>
 										</Form.Field>
 									</StyledForm>
@@ -302,11 +424,15 @@ class UserForm extends React.Component {
 								</Grid.Column>
 								<Grid.Column width={3} />
 								<Grid.Column width={2}>
-									<Speech
-										onSpeechEnd={(origin, destination, date) => {
-											this.speechToTextResult(origin, destination, date);
-										}}
-									/>
+									{this.state.recognizer ? (
+										<Speech
+											onSpeechEnd={(origin, destination, date) => {
+												this.speechToTextResult(origin, destination, date);
+											}}
+										/>
+									) : (
+										<div />
+									)}
 								</Grid.Column>
 							</Grid>
 						</Grid.Column>
@@ -319,7 +445,14 @@ class UserForm extends React.Component {
 							<Dropdown placeholder='English' options={languages} onChange={this.changeLanguage} />
 						</Grid.Column>
 						<Grid.Column width={6}>
-							{/* <Radio toggle onChange={this.searchAlternateTrains} /> */}
+							<Button onClick={this.sortbydistance}>Sort by distance</Button>
+							<Button onClick={this.sortbytime}>Sort by time</Button>
+							<Button onClick={this.filterbytime1}>Filter 00:00 to 06:00</Button>
+							<Button onClick={this.filterbytime2}>Filter 06:00 to 12:00</Button>
+							<Button onClick={this.filterbytime3}>Filter 12:00 to 18:00</Button>
+							<Button onClick={this.filterbytime4}>Filter 18:00 to 00:00</Button>
+							<Button onClick={this.showAll}>showAll</Button>
+							{<Radio toggle onChange={this.searchAlternateTrains} />}
 							<Form style={{ display: 'flex', flexWrap: 'wrap' }}>
 								Route Options:
 								<Form.Field>
