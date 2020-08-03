@@ -1,15 +1,18 @@
 import React from 'react';
-import { Divider } from 'semantic-ui-react';
+import { Divider,Button } from 'semantic-ui-react';
 
 import JourneyCard from './JourneyCard.js';
 
 class AlternateTrainsCard extends React.Component {
+	
 	render() {
 		const { journey } = this.props;
-		console.log(journey);
-		const { originToConnection, connectionToDestination, timeGap, connection } = this.props.journey;
+		//console.log(journey);
+
+		const { originToConnection, connectionToDestination, timeGap, connection } =this.props.journey;
 		return (
 			<React.Fragment>
+
 				<JourneyCard train={originToConnection} />
 				<Divider horizontal>
 					Connecting Station {': '}
