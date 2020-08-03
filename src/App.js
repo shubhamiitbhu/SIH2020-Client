@@ -7,6 +7,7 @@ import Navbar from './Components/Navbar.js';
 import Logger from './Components/Logger.js';
 import UserContext from './contexts/UserContext.js';
 import EnquirySpeech from './Components/EnquirySpeech.js';
+import Uts from './Components/Uts.js';
 
 class App extends React.Component {
 	static contextType = UserContext;
@@ -72,6 +73,9 @@ class App extends React.Component {
 							</Route>
 							<Route path='/enquiry'>
 								<EnquirySpeech />
+							</Route>
+							<Route path='/uts'>
+								<Uts />
 							</Route>
 						</Switch>
 					</Router>

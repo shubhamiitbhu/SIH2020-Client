@@ -62,7 +62,7 @@ const EnquirySpeech = () => {
 	recognition.onspeechend = () => {
 		recognition.stop();
 	};
-	console.log(intent);
+
 	return (
 		<React.Fragment>
 			<ToastContainer />
