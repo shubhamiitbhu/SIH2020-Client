@@ -1,5 +1,5 @@
 import React from 'react';
-import { Divider } from 'semantic-ui-react';
+import { Divider, Button } from 'semantic-ui-react';
 
 import JourneyCard from './JourneyCard.js';
 

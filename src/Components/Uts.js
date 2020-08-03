@@ -60,7 +60,7 @@ const Uts = () => {
 
 	return (
 		<React.Fragment>
-			<div>
+			<div style={{textAlign:'center'}}>
 				<h1>Unreserved Ticketing system</h1>
 				<StyledButton
 					circular
@@ -74,10 +74,12 @@ const Uts = () => {
 					<Icon size={40} icon={mic} />
 					<div>
 						{origin !== null && destination !== null && via !== null && trains !== null ? (
-							<div>
+							<div style={{fontSize:2+'rem', margin:1+'rem'}}>
 								Your {number} ticket from {origin} to {destination} via {via} is ready, are you sure you
 								want to book your ticket?
+								<Button style={{display:'block',textAlign:'center',margin:'auto',lineHeight:2+'rem'}} class="ui disabled button" disabled="" tabindex="-1">Book Now </Button>
 							</div>
+							
 						) : null}
 					</div>
 				</StyledButton>
@@ -103,9 +105,6 @@ const Uts = () => {
 };
 
 const StyledButton = styled(Button)`
-  position: absolute !important;
-  bottom: 2% !important;
-  right: 2% !important;
 `;
 
 export default Uts;

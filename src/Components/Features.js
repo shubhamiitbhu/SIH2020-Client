@@ -1,6 +1,5 @@
 import React from 'react';
 import { Grid, Icon } from 'semantic-ui-react';
-
 class Features extends React.Component {
 	render() {
 		return (
@@ -13,8 +12,7 @@ class Features extends React.Component {
 							<br />
 							Smart Enquiry
 						</a>
-					</Grid.Column>
-
+					</Grid.Column>{' '}
 					<Grid.Column width={1} />
 					<Grid.Column width={2}>
 						<a href='/uts'>
@@ -23,8 +21,7 @@ class Features extends React.Component {
 							Smart UTS Booking
 						</a>
 					</Grid.Column>
-					<Grid.Column width={1} />
-
+					<Grid.Column width={1} />{' '}
 					<Grid.Column width={2}>
 						<a href='/logger'>
 							<Icon name='chart line' size='huge' />
@@ -38,5 +35,4 @@ class Features extends React.Component {
 		);
 	}
 }
-
 export default Features;

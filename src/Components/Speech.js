@@ -54,7 +54,10 @@ const Speech = (props) => {
 
 		const today = new Date();
 		var data = {};
-		data['date'] = today.getDate().toString() + ' jul ' + today.getFullYear();
+		var todaynew = today.toString();
+		const dateSplit = todaynew.split(' ');
+		const month = dateSplit[1];
+		data['date'] = today.getDate().toString() + ' '+month.toLowerCase().toString()+' ' + today.getFullYear();
 		const iterate = entityExtraction.data;
 		for (var key in iterate) {
 			data[iterate[key]['entity']] = iterate[key]['value'];
@@ -62,6 +65,21 @@ const Speech = (props) => {
 
 		const originBody = { name: data['orig'] };
 		const destinationBody = { name: data['dest'] };
+
+		var dateString =data['date'].split(' ');
+		if(dateString[0].length==3)
+		dateString[0]=dateString[0][0];
+		if(dateString[0].length==4)
+		dateString[0]=dateString[0][0]+dateString[0][1];
+		data['date']=dateString[0]+' '+dateString[1]+' '+dateString[2];
+    const querydate=new Date(data['date']);
+
+		if(querydate<today)
+		{
+			localStorage.setItem("CALLAPI","NO");
+			 toast.error('Invalid date!');
+		}
+
 
 		await database.collection('Logger').add({
 			time: new Date().getTime().toString(),
